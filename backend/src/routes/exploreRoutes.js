@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const exploreController = require('../controllers/exploreController');
-const { protect } = require('../middleware/authMiddleware');
+const { protect, authorize } = require('../middleware/authMiddleware');
 
 // Public routes
 router.get('/overview', exploreController.getExploreData);

@@ -6,12 +6,16 @@ import 'features/auth/screens/onboarding_screen.dart';
 import 'features/auth/screens/login_screen.dart';
 import 'features/auth/screens/register_screen.dart';
 import 'features/auth/screens/forgot_password_screen.dart';
+import 'features/explore/presentation/provider/explore_provider.dart';
+import 'features/explore/presentation/screens/explore_screen.dart';
+import 'features/main/presentation/screens/main_screen.dart';
 
 void main() {
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => ExploreProvider()..fetchExploreData()),
       ],
       child: const Fellow4UApp(),
     ),
@@ -41,12 +45,13 @@ class _Fellow4UAppState extends State<Fellow4UApp> {
       title: 'Fellow4U',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      initialRoute: '/',
+      initialRoute: '/', // Reverted to Onboarding for proper flow
       routes: {
         '/': (context) => const OnboardingScreen(),
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
         '/forgot-password': (context) => const ForgotPasswordScreen(),
+        '/explore': (context) => const MainScreen(),
       },
     );
   }

@@ -45,7 +45,6 @@ CREATE TABLE IF NOT EXISTS bookings (
 );
 
 -- 3. Bảng Booking_Bids (Quản lý đấu thầu từ Guide)
--- Dùng khi Traveler tạo yêu cầu và nhiều Guide nhảy vào chào giá
 CREATE TABLE IF NOT EXISTS booking_bids (
     bid_id SERIAL PRIMARY KEY,
     booking_id INT NOT NULL REFERENCES bookings(booking_id) ON DELETE CASCADE,
@@ -59,7 +58,6 @@ CREATE TABLE IF NOT EXISTS booking_bids (
 );
 
 -- 4. Bảng Booking_Status_History (Nhật ký thay đổi trạng thái)
--- Phục vụ việc theo dõi: "Tại sao tour này bị hủy?" hoặc "Thanh toán lúc nào?"
 CREATE TABLE IF NOT EXISTS booking_status_history (
     history_id SERIAL PRIMARY KEY,
     booking_id INT NOT NULL REFERENCES bookings(booking_id) ON DELETE CASCADE,
@@ -71,14 +69,12 @@ CREATE TABLE IF NOT EXISTS booking_status_history (
 );
 
 -- 5. Tối ưu hóa truy vấn cho các Tab UI (Next, Current, Past)
--- Index giúp lọc cực nhanh cho Traveler
-CREATE INDEX idx_bookings_traveler_status ON bookings(traveler_id, status);
--- Index giúp Guide quản lý công việc
-CREATE INDEX idx_bookings_guide_status ON bookings(guide_id, status);
--- Index theo ngày để hệ thống quét tự động chuyển trạng thái 'ongoing'
-CREATE INDEX idx_bookings_dates ON bookings(start_date, end_date);
+CREATE INDEX IF NOT EXISTS idx_bookings_traveler_status ON bookings(traveler_id, status);
+CREATE INDEX IF NOT EXISTS idx_bookings_guide_status ON bookings(guide_id, status);
+CREATE INDEX IF NOT EXISTS idx_bookings_dates ON bookings(start_date, end_date);
 
 -- 6. Trigger tự động cập nhật updated_at
+DROP TRIGGER IF EXISTS update_bookings_modtime ON bookings;
 CREATE TRIGGER update_bookings_modtime
     BEFORE UPDATE ON bookings
     FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
@@ -95,6 +91,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_log_status_change ON bookings;
 CREATE TRIGGER trg_log_status_change
     AFTER UPDATE ON bookings
     FOR EACH ROW EXECUTE PROCEDURE log_booking_status_changes();

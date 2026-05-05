@@ -5,14 +5,12 @@
 -- =============================================================================
 
 -- 1. Cập nhật bảng Users (Bổ sung các trường phục vụ Profile cá nhân)
--- Lưu ý: Thực hiện ALTER nếu bảng đã tồn tại từ Module 1
 ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS cover_url TEXT;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS date_of_birth DATE;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS gender VARCHAR(20);
 
 -- 2. Bảng User_Photos (Kho lưu trữ ảnh cá nhân)
--- Lưu trữ tất cả ảnh người dùng tải lên (Module 12 - Mục 1)
 CREATE TABLE IF NOT EXISTS user_photos (
     photo_id SERIAL PRIMARY KEY,
     user_id INT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
@@ -38,7 +36,6 @@ CREATE TABLE IF NOT EXISTS user_journeys (
 );
 
 -- 4. Bảng trung gian Journey_Media (Liên kết Ảnh vào Hành trình)
--- Một hành trình có nhiều ảnh và một ảnh có thể xuất hiện trong nhiều hành trình
 CREATE TABLE IF NOT EXISTS journey_media (
     journey_id INT NOT NULL REFERENCES user_journeys(journey_id) ON DELETE CASCADE,
     photo_id INT NOT NULL REFERENCES user_photos(photo_id) ON DELETE CASCADE,
@@ -68,15 +65,17 @@ CREATE TABLE IF NOT EXISTS security_logs (
 );
 
 -- 7. Tối ưu hóa truy vấn
-CREATE INDEX idx_user_photos_user ON user_photos(user_id);
-CREATE INDEX idx_user_journeys_user ON user_journeys(user_id);
-CREATE INDEX idx_security_logs_user ON security_logs(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_user_photos_user ON user_photos(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_journeys_user ON user_journeys(user_id);
+CREATE INDEX IF NOT EXISTS idx_security_logs_user ON security_logs(user_id, created_at DESC);
 
 -- 8. Trigger cập nhật updated_at cho Journeys và Settings
+DROP TRIGGER IF EXISTS update_journeys_modtime ON user_journeys;
 CREATE TRIGGER update_journeys_modtime
     BEFORE UPDATE ON user_journeys
     FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_user_settings_modtime ON user_settings;
 CREATE TRIGGER update_user_settings_modtime
     BEFORE UPDATE ON user_settings
     FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();

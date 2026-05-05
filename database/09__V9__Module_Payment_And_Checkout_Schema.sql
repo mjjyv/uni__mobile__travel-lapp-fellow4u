@@ -17,7 +17,6 @@ BEGIN
 END $$;
 
 -- 2. Bảng User_Payment_Methods (Phương thức thanh toán của người dùng)
--- Lưu ý: Tuyệt đối không lưu số thẻ hoặc CVV trực tiếp. Chỉ lưu Token từ Gateway (Stripe/Paypal).
 CREATE TABLE IF NOT EXISTS user_payment_methods (
     method_id SERIAL PRIMARY KEY,
     user_id INT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
@@ -63,17 +62,17 @@ CREATE TABLE IF NOT EXISTS refund_requests (
 );
 
 -- 5. Tối ưu hóa truy vấn và bảo mật
-CREATE INDEX idx_payments_booking_id ON payments(booking_id);
-CREATE INDEX idx_user_payment_methods_user ON user_payment_methods(user_id);
-CREATE INDEX idx_payments_ref ON payments(transaction_ref);
+CREATE INDEX IF NOT EXISTS idx_payments_booking_id ON payments(booking_id);
+CREATE INDEX IF NOT EXISTS idx_user_payment_methods_user ON user_payment_methods(user_id);
+CREATE INDEX IF NOT EXISTS idx_payments_ref ON payments(transaction_ref);
 
 -- 6. Trigger tự động cập nhật updated_at
+DROP TRIGGER IF EXISTS update_payments_modtime ON payments;
 CREATE TRIGGER update_payments_modtime
     BEFORE UPDATE ON payments
     FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
 
 -- 7. Logic tự động cập nhật trạng thái Booking sau khi thanh toán
--- Ví dụ: Khi thanh toán 'upfront' thành công, chuyển Booking sang 'paid' (Module 7)
 CREATE OR REPLACE FUNCTION update_booking_after_payment()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -87,6 +86,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_after_payment_success ON payments;
 CREATE TRIGGER trg_after_payment_success
     AFTER UPDATE OF status ON payments
     FOR EACH ROW

@@ -10,6 +10,10 @@ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'page_category_type') THEN
         CREATE TYPE page_category_type AS ENUM ('Guides_More', 'Tours_More');
     END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'collection_item_type') THEN
+        CREATE TYPE collection_item_type AS ENUM ('guide', 'tour');
+    END IF;
 END $$;
 
 -- 2. Bảng App_Banners (Quản lý ảnh bìa và tiêu đề trang danh sách)
@@ -25,19 +29,17 @@ CREATE TABLE IF NOT EXISTS app_banners (
 );
 
 -- 3. Bảng Collections (Nhóm nội dung/Bộ sưu tập)
--- Ví dụ: "Top-rated Guides", "Summer Deals 2024", "Private Local"
 CREATE TABLE IF NOT EXISTS collections (
     collection_id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     slug VARCHAR(100) UNIQUE NOT NULL, -- Dùng để lọc trên URL/API (VD: private-local)
     description TEXT,
-    item_type EN_TYPE ENUM('guide', 'tour') NOT NULL, -- Phân loại bộ sưu tập này chứa gì
+    item_type collection_item_type NOT NULL, -- Phân loại bộ sưu tập này chứa gì
     is_public BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 4. Bảng trung gian Collection_Items (Gắn Tour/Guide vào Bộ sưu tập)
--- Sử dụng 2 bảng riêng biệt để đảm bảo Referential Integrity (Ràng buộc khóa ngoại)
 CREATE TABLE IF NOT EXISTS collection_guides (
     collection_id INT NOT NULL REFERENCES collections(collection_id) ON DELETE CASCADE,
     guide_id INT NOT NULL REFERENCES guide_profiles(guide_id) ON DELETE CASCADE,
@@ -53,12 +55,13 @@ CREATE TABLE IF NOT EXISTS collection_tours (
 );
 
 -- 5. Tối ưu hóa truy vấn Phân trang & Banner
-CREATE INDEX idx_banners_type ON app_banners(page_type) WHERE is_active IS TRUE;
-CREATE INDEX idx_collections_slug ON collections(slug);
-CREATE INDEX idx_coll_guides_sort ON collection_guides(sort_order);
-CREATE INDEX idx_coll_tours_sort ON collection_tours(sort_order);
+CREATE INDEX IF NOT EXISTS idx_banners_type ON app_banners(page_type) WHERE is_active IS TRUE;
+CREATE INDEX IF NOT EXISTS idx_collections_slug ON collections(slug);
+CREATE INDEX IF NOT EXISTS idx_coll_guides_sort ON collection_guides(sort_order);
+CREATE INDEX IF NOT EXISTS idx_coll_tours_sort ON collection_tours(sort_order);
 
 -- 6. Trigger cập nhật updated_at cho Banners
+DROP TRIGGER IF EXISTS update_banners_modtime ON app_banners;
 CREATE TRIGGER update_banners_modtime
     BEFORE UPDATE ON app_banners
     FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();

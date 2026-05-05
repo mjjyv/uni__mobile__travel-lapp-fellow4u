@@ -54,21 +54,27 @@ CREATE TABLE IF NOT EXISTS attractions (
 );
 
 -- 5. Kho tư liệu Guide (Portfolio Media)
--- Lưu trữ Video giới thiệu hoặc ảnh thực tế của Guide (Module 3 - Mục 2)
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'portfolio_media_type') THEN
+        CREATE TYPE portfolio_media_type AS ENUM ('image', 'video');
+    END IF;
+END $$;
+
 CREATE TABLE IF NOT EXISTS guide_portfolio_media (
     media_id SERIAL PRIMARY KEY,
     guide_id INT NOT NULL REFERENCES guide_profiles(guide_id) ON DELETE CASCADE,
     media_url TEXT NOT NULL,
-    media_type ENUM('image', 'video') DEFAULT 'image',
+    media_type portfolio_media_type DEFAULT 'image',
     title VARCHAR(100),
     display_order INT DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 6. Tối ưu hóa & Index
-CREATE INDEX idx_reviews_guide_id ON reviews(guide_id);
-CREATE INDEX idx_attractions_location ON attractions(location_id);
-CREATE INDEX idx_attractions_name_trgm ON attractions USING gin (name gin_trgm_ops); -- Hỗ trợ Autocomplete nhanh
+CREATE INDEX IF NOT EXISTS idx_reviews_guide_id ON reviews(guide_id);
+CREATE INDEX IF NOT EXISTS idx_attractions_location ON attractions(location_id);
+CREATE INDEX IF NOT EXISTS idx_attractions_name_trgm ON attractions USING gin (name gin_trgm_ops); -- Hỗ trợ Autocomplete nhanh
 
 -- 7. Dữ liệu mẫu (Seed Data)
 INSERT INTO languages (lang_name, lang_code) VALUES 

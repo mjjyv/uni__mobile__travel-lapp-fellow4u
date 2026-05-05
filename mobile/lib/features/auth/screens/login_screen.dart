@@ -32,7 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Login successful!"), backgroundColor: AppTheme.primaryColor),
           );
-          // Navigator.pushReplacementNamed(context, '/home');
+          Navigator.pushReplacementNamed(context, '/explore');
         }
       } else if (authProvider.errorMessage != null) {
         if (mounted) {

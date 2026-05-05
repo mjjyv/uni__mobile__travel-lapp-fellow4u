@@ -52,9 +52,9 @@ CREATE TABLE IF NOT EXISTS tour_age_pricing (
 );
 
 -- 5. Tối ưu hóa & Index
-CREATE INDEX idx_tour_images_tour ON tour_images(tour_id);
-CREATE INDEX idx_tour_schedules_composite ON tour_schedules(tour_id, day_number, start_time);
-CREATE INDEX idx_tour_pricing_tour ON tour_age_pricing(tour_id);
+CREATE INDEX IF NOT EXISTS idx_tour_images_tour ON tour_images(tour_id);
+CREATE INDEX IF NOT EXISTS idx_tour_schedules_composite ON tour_schedules(tour_id, day_number, start_time);
+CREATE INDEX IF NOT EXISTS idx_tour_pricing_tour ON tour_age_pricing(tour_id);
 
 -- 6. Trigger cập nhật Rating cho Provider (Gợi ý logic)
 -- Khi một tour thuộc provider được đánh giá, provider_rating cũng nên được cập nhật

@@ -55,9 +55,9 @@ CREATE TABLE IF NOT EXISTS notifications (
 
 -- 4. Tối ưu hóa truy vấn cho Notification Center
 -- Truy vấn nhanh thông báo chưa đọc của 1 User
-CREATE INDEX idx_notifications_unread ON notifications(user_id, is_read) WHERE is_read IS FALSE;
+CREATE INDEX IF NOT EXISTS idx_notifications_unread ON notifications(user_id, is_read) WHERE is_read IS FALSE;
 -- Sắp xếp thông báo theo thời gian mới nhất
-CREATE INDEX idx_notifications_created ON notifications(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_notifications_created ON notifications(user_id, created_at DESC);
 
 -- 5. Function/Trigger hỗ trợ tự động dọn dẹp (Optional)
 -- Xóa các thông báo cũ hơn 90 ngày để giảm tải database

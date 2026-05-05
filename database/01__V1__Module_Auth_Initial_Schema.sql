@@ -16,6 +16,9 @@ BEGIN
     END IF;
 END $$;
 
+-- Khởi tạo Extension hỗ trợ tìm kiếm mờ (Fuzzy Search)
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
 -- 2. Bảng Countries (Quốc gia)
 CREATE TABLE IF NOT EXISTS countries (
     country_id SERIAL PRIMARY KEY,
@@ -60,8 +63,8 @@ CREATE TABLE IF NOT EXISTS password_resets (
 );
 
 -- 6. Tạo Indexes để tối ưu tốc độ tìm kiếm
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_social_user_id ON social_accounts(user_id);
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_social_user_id ON social_accounts(user_id);
 
 -- 7. Trigger tự động cập nhật updated_at
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -72,6 +75,7 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
+DROP TRIGGER IF EXISTS update_users_modtime ON users;
 CREATE TRIGGER update_users_modtime
     BEFORE UPDATE ON users
     FOR EACH ROW

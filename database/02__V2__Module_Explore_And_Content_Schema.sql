@@ -9,7 +9,7 @@
 CREATE TABLE IF NOT EXISTS locations (
     location_id SERIAL PRIMARY KEY,
     country_id INT NOT NULL REFERENCES countries(country_id),
-    city_name VARCHAR(100) NOT NULL,
+    city_name VARCHAR(100) UNIQUE NOT NULL,
     description TEXT,
     thumbnail_url TEXT,
     is_popular BOOLEAN DEFAULT FALSE,
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS guide_profiles (
 -- 3. Bảng Tours (Chuyến đi dài ngày)
 CREATE TABLE IF NOT EXISTS tours (
     tour_id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
+    title VARCHAR(255) UNIQUE NOT NULL,
     location_id INT NOT NULL REFERENCES locations(location_id),
     price DECIMAL(12, 2) NOT NULL, -- Độ chính xác cao cho tiền tệ
     duration_days INT DEFAULT 1,
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS tours (
 CREATE TABLE IF NOT EXISTS experiences (
     exp_id SERIAL PRIMARY KEY,
     guide_id INT NOT NULL REFERENCES guide_profiles(guide_id) ON DELETE CASCADE,
-    title VARCHAR(255) NOT NULL,
+    title VARCHAR(255) UNIQUE NOT NULL,
     location_id INT NOT NULL REFERENCES locations(location_id),
     price DECIMAL(12, 2) NOT NULL,
     duration_hours FLOAT DEFAULT 1.0,
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS experiences (
 -- 5. Bảng Travel_News (Tin tức & Blog)
 CREATE TABLE IF NOT EXISTS travel_news (
     news_id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
+    title VARCHAR(255) UNIQUE NOT NULL,
     content TEXT, -- Nội dung chính
     metadata JSONB, -- Lưu trữ thông tin linh hoạt (tags, author_name, read_time)
     image_url TEXT,
@@ -82,15 +82,17 @@ CREATE TABLE IF NOT EXISTS wishlist (
 );
 
 -- 7. Tối ưu hóa hiệu suất
-CREATE INDEX idx_locations_city ON locations(city_name);
-CREATE INDEX idx_tours_featured ON tours(is_featured) WHERE is_featured IS TRUE;
-CREATE INDEX idx_news_jsonb_tags ON travel_news USING gin (metadata);
+CREATE INDEX IF NOT EXISTS idx_locations_city ON locations(city_name);
+CREATE INDEX IF NOT EXISTS idx_tours_featured ON tours(is_featured) WHERE is_featured IS TRUE;
+CREATE INDEX IF NOT EXISTS idx_news_jsonb_tags ON travel_news USING gin (metadata);
 
 -- 8. Trigger cập nhật thời gian cho Guide_Profiles & Tours
+DROP TRIGGER IF EXISTS update_guide_profile_modtime ON guide_profiles;
 CREATE TRIGGER update_guide_profile_modtime
     BEFORE UPDATE ON guide_profiles
     FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_tours_modtime ON tours;
 CREATE TRIGGER update_tours_modtime
     BEFORE UPDATE ON tours
     FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
