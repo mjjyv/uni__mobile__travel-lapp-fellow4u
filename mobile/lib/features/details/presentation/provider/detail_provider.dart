@@ -6,7 +6,7 @@ import '../../../explore/data/models/explore_models.dart';
 class DetailProvider extends ChangeNotifier {
   final DetailService _detailService = DetailService();
 
-  Tour? _selectedTour;
+  TourDetailFull? _selectedTour;
   Experience? _selectedExperience;
   GuideFullProfile? _selectedGuide;
   LocationFullDetail? _selectedLocation;
@@ -14,7 +14,7 @@ class DetailProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
 
-  Tour? get selectedTour => _selectedTour;
+  TourDetailFull? get selectedTour => _selectedTour;
   Experience? get selectedExperience => _selectedExperience;
   GuideFullProfile? get selectedGuide => _selectedGuide;
   LocationFullDetail? get selectedLocation => _selectedLocation;

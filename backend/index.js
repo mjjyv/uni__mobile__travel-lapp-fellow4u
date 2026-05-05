@@ -11,21 +11,17 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-const authRoutes = require('./src/routes/authRoutes');
-const exploreRoutes = require('./src/routes/exploreRoutes');
-const serviceRoutes = require('./src/routes/serviceRoutes');
-const guideRoutes = require('./src/routes/guideRoutes');
-const locationRoutes = require('./src/routes/locationRoutes');
-
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to Fellow4U API' });
 });
 
-app.use('/api/auth', authRoutes);
-app.use('/api/explore', exploreRoutes);
-app.use('/api/services', serviceRoutes);
-app.use('/api/guides', guideRoutes);
-app.use('/api/locations', locationRoutes);
+app.use('/api/auth', require('./src/routes/authRoutes'));
+app.use('/api/explore', require('./src/routes/exploreRoutes'));
+app.use('/api/services', require('./src/routes/serviceRoutes'));
+app.use('/api/guides', require('./src/routes/guideRoutes'));
+app.use('/api/locations', require('./src/routes/locationRoutes'));
+app.use('/api/search', require('./src/routes/searchRoutes'));
+app.use('/api/categories', require('./src/routes/categoryRoutes'));
 
 // Database Connection & Server Start
 const startServer = async () => {

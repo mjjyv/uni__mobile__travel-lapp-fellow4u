@@ -28,6 +28,7 @@ class Tour {
   final int durationDays;
   final String thumbnailUrl;
   final String locationName;
+  final String? description;
   final bool isFeatured;
 
   Tour({
@@ -37,6 +38,7 @@ class Tour {
     required this.durationDays,
     required this.thumbnailUrl,
     required this.locationName,
+    this.description,
     this.isFeatured = false,
   });
 
@@ -48,6 +50,7 @@ class Tour {
       durationDays: json['duration_days'] ?? 1,
       thumbnailUrl: json['thumbnail_url'] ?? '',
       locationName: json['Location']?['city_name'] ?? '',
+      description: json['description'],
       isFeatured: json['is_featured'] ?? false,
     );
   }

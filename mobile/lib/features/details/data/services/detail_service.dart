@@ -6,10 +6,10 @@ import '../../../explore/data/models/explore_models.dart';
 class DetailService {
   final String baseUrl = 'http://localhost:3000/api'; // Replace with your IP for real device
 
-  Future<Tour> getTourDetail(int id) async {
+  Future<TourDetailFull> getTourDetail(int id) async {
     final response = await http.get(Uri.parse('$baseUrl/services/tours/$id'));
     if (response.statusCode == 200) {
-      return Tour.fromJson(json.decode(response.body));
+      return TourDetailFull.fromJson(json.decode(response.body));
     } else {
       throw Exception('Failed to load tour details');
     }

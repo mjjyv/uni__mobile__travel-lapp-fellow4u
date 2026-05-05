@@ -39,6 +39,7 @@ class _TourDetailScreenState extends State<TourDetailScreen> {
 
           return CustomScrollView(
             slivers: [
+              // Image Gallery Carousel
               SliverAppBar(
                 expandedHeight: 400,
                 pinned: true,
@@ -46,7 +47,15 @@ class _TourDetailScreenState extends State<TourDetailScreen> {
                   background: Stack(
                     fit: StackFit.expand,
                     children: [
-                      Image.network(tour.thumbnailUrl, fit: BoxFit.cover),
+                      if (tour.images.isNotEmpty)
+                        PageView.builder(
+                          itemCount: tour.images.length,
+                          itemBuilder: (context, index) {
+                            return Image.network(tour.images[index].url, fit: BoxFit.cover);
+                          },
+                        )
+                      else
+                        Image.network(tour.basicInfo.thumbnailUrl, fit: BoxFit.cover),
                       const DecoratedBox(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
@@ -56,22 +65,41 @@ class _TourDetailScreenState extends State<TourDetailScreen> {
                           ),
                         ),
                       ),
+                      // Image Indicator Mock
+                      if (tour.images.isNotEmpty)
+                        Positioned(
+                          bottom: 20,
+                          right: 20,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Colors.black54,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              '1/${tour.images.length}',
+                              style: const TextStyle(color: Colors.white, fontSize: 12),
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),
               ),
+
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Header Section
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Expanded(
                             child: Text(
-                              tour.title,
+                              tour.basicInfo.title,
                               style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
                             ),
                           ),
@@ -82,37 +110,108 @@ class _TourDetailScreenState extends State<TourDetailScreen> {
                       Row(
                         children: [
                           const Icon(Icons.location_on, size: 18, color: Color(0xFF00CEA6)),
-                          Text(tour.locationName, style: const TextStyle(fontSize: 16, color: Colors.grey)),
-                          const Spacer(),
-                          Text(
-                            '\$${tour.price.toStringAsFixed(0)}',
-                            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF00CEA6)),
-                          ),
+                          Text(tour.basicInfo.locationName, style: const TextStyle(fontSize: 16, color: Colors.grey)),
                         ],
                       ),
-                      const SizedBox(height: 20),
+                      
+                      const SizedBox(height: 24),
+                      
+                      // Provider Card
+                      if (tour.provider != null)
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade50,
+                            borderRadius: BorderRadius.circular(15),
+                            border: Border.all(color: Colors.grey.shade200),
+                          ),
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 25,
+                                backgroundImage: NetworkImage(tour.provider!.logoUrl ?? 'https://i.pravatar.cc/150?u=provider'),
+                              ),
+                              const SizedBox(width: 15),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text('Organizer', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                                    Text(tour.provider!.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(color: Colors.amber.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+                                child: Row(
+                                  children: [
+                                    const Icon(Icons.star, color: Colors.amber, size: 16),
+                                    const SizedBox(width: 4),
+                                    Text(tour.provider!.rating.toString(), style: const TextStyle(fontWeight: FontWeight.bold)),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                      const SizedBox(height: 30),
+                      
+                      // Quick Info Grid
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          _buildInfoItem(Icons.access_time, '${tour.durationDays} Days'),
+                          _buildInfoItem(Icons.access_time, '${tour.basicInfo.durationDays} Days'),
                           _buildInfoItem(Icons.star, '4.8 (1.2k)'),
                           _buildInfoItem(Icons.language, 'English'),
                         ],
                       ),
+
                       const SizedBox(height: 30),
+                      
+                      // Pickup point
+                      if (tour.pickupPoint != null) ...[
+                        const Text('Pickup Point', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            const Icon(Icons.directions_bus, size: 18, color: Color(0xFF00CEA6)),
+                            const SizedBox(width: 8),
+                            Expanded(child: Text(tour.pickupPoint!, style: const TextStyle(color: Colors.black87))),
+                          ],
+                        ),
+                        const SizedBox(height: 30),
+                      ],
+
                       const Text('Description', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 10),
-                      const Text(
-                        'Experience the best of this location with our curated tour. We take you to the most iconic spots and hidden gems, ensuring a memorable journey filled with culture, food, and adventure.',
-                        style: TextStyle(fontSize: 16, height: 1.5, color: Colors.black87),
+                      Text(
+                        tour.basicInfo.description ?? 'No description available.',
+                        style: const TextStyle(fontSize: 16, height: 1.5, color: Colors.black87),
                       ),
+                      
                       const SizedBox(height: 30),
-                      // Mock itinerary
-                      const Text('Itinerary', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 15),
-                      _buildItineraryItem('Day 1', 'Arrival and City Tour'),
-                      _buildItineraryItem('Day 2', 'Historic Palace Exploration'),
-                      _buildItineraryItem('Day 3', 'Local Food Adventure and Departure'),
+                      
+                      // Detailed Itinerary
+                      if (tour.schedules.isNotEmpty) ...[
+                        const Text('Itinerary', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 15),
+                        ...tour.schedules.map((s) => _buildItineraryItem('Day ${s.day}', '${s.time} - ${s.title}', s.description)),
+                      ],
+
+                      const SizedBox(height: 30),
+                      
+                      // Pricing breakdown
+                      if (tour.agePricings.isNotEmpty) ...[
+                        const Text('Pricing', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 10),
+                        ...tour.agePricings.map((p) => ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          title: Text(p.label, style: const TextStyle(fontWeight: FontWeight.w500)),
+                          trailing: Text('\$${p.price.toStringAsFixed(0)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF00CEA6))),
+                        )),
+                      ],
                       
                       const SizedBox(height: 100),
                     ],
@@ -140,8 +239,8 @@ class _TourDetailScreenState extends State<TourDetailScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Total Price', style: TextStyle(color: Colors.grey)),
-                    Text('\$${tour.price.toStringAsFixed(0)}', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    const Text('Base Price', style: TextStyle(color: Colors.grey)),
+                    Text('\$${tour.basicInfo.price.toStringAsFixed(0)}', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                   ],
                 ),
                 const SizedBox(width: 30),
@@ -174,9 +273,9 @@ class _TourDetailScreenState extends State<TourDetailScreen> {
     );
   }
 
-  Widget _buildItineraryItem(String day, String activity) {
+  Widget _buildItineraryItem(String day, String title, String description) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 15.0),
+      padding: const EdgeInsets.only(bottom: 20.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -186,7 +285,16 @@ class _TourDetailScreenState extends State<TourDetailScreen> {
             child: Text(day, style: const TextStyle(color: Color(0xFF00CEA6), fontWeight: FontWeight.bold)),
           ),
           const SizedBox(width: 15),
-          Expanded(child: Text(activity, style: const TextStyle(fontSize: 16))),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 4),
+                Text(description, style: const TextStyle(color: Colors.grey, fontSize: 14)),
+              ],
+            ),
+          ),
         ],
       ),
     );

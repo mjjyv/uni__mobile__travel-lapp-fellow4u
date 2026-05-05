@@ -18,6 +18,12 @@ const TourProvider = require('./TourProvider');
 const TourImage = require('./TourImage');
 const TourSchedule = require('./TourSchedule');
 const TourAgePricing = require('./TourAgePricing');
+const GuideAvailability = require('./GuideAvailability');
+const SearchHistory = require('./SearchHistory');
+const AppBanner = require('./AppBanner');
+const Collection = require('./Collection');
+const CollectionGuide = require('./CollectionGuide');
+const CollectionTour = require('./CollectionTour');
 
 // Associations - Module 1
 User.belongsTo(Country, { foreignKey: 'country_id' });
@@ -89,6 +95,38 @@ TourSchedule.belongsTo(Attraction, { foreignKey: 'attraction_id' });
 Tour.hasMany(TourAgePricing, { foreignKey: 'tour_id', as: 'AgePricings' });
 TourAgePricing.belongsTo(Tour, { foreignKey: 'tour_id' });
 
+// Associations - Module 5 (Search & Filtering)
+GuideProfile.hasMany(GuideAvailability, { foreignKey: 'guide_id', as: 'Availability' });
+GuideAvailability.belongsTo(GuideProfile, { foreignKey: 'guide_id' });
+
+User.hasMany(SearchHistory, { foreignKey: 'user_id' });
+SearchHistory.belongsTo(User, { foreignKey: 'user_id' });
+
+// Associations - Module 6 (Categories & Extended View)
+Collection.belongsToMany(GuideProfile, { 
+  through: CollectionGuide, 
+  foreignKey: 'collection_id', 
+  otherKey: 'guide_id',
+  as: 'Guides'
+});
+GuideProfile.belongsToMany(Collection, { 
+  through: CollectionGuide, 
+  foreignKey: 'guide_id', 
+  otherKey: 'collection_id' 
+});
+
+Collection.belongsToMany(Tour, { 
+  through: CollectionTour, 
+  foreignKey: 'collection_id', 
+  otherKey: 'tour_id',
+  as: 'Tours'
+});
+Tour.belongsToMany(Collection, { 
+  through: CollectionTour, 
+  foreignKey: 'tour_id', 
+  otherKey: 'collection_id' 
+});
+
 module.exports = {
   sequelize,
   User,
@@ -109,5 +147,11 @@ module.exports = {
   TourProvider,
   TourImage,
   TourSchedule,
-  TourAgePricing
+  TourAgePricing,
+  GuideAvailability,
+  SearchHistory,
+  AppBanner,
+  Collection,
+  CollectionGuide,
+  CollectionTour
 };

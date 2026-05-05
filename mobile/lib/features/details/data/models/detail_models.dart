@@ -151,6 +151,111 @@ class Attraction {
   }
 }
 
+class ProviderModel {
+  final String name;
+  final String? logoUrl;
+  final double rating;
+
+  ProviderModel({required this.name, this.logoUrl, required this.rating});
+
+  factory ProviderModel.fromJson(Map<String, dynamic> json) {
+    return ProviderModel(
+      name: json['name'],
+      logoUrl: json['logo_url'],
+      rating: double.parse((json['rating_avg'] ?? 0.0).toString()),
+    );
+  }
+}
+
+class TourImageModel {
+  final String url;
+  final String? caption;
+
+  TourImageModel({required this.url, this.caption});
+
+  factory TourImageModel.fromJson(Map<String, dynamic> json) {
+    return TourImageModel(
+      url: json['image_url'],
+      caption: json['caption'],
+    );
+  }
+}
+
+class TourScheduleModel {
+  final int day;
+  final String time;
+  final String title;
+  final String description;
+  final Attraction? attraction;
+
+  TourScheduleModel({
+    required this.day,
+    required this.time,
+    required this.title,
+    required this.description,
+    this.attraction,
+  });
+
+  factory TourScheduleModel.fromJson(Map<String, dynamic> json) {
+    return TourScheduleModel(
+      day: json['day_number'],
+      time: json['start_time'].toString().substring(0, 5),
+      title: json['activity_title'],
+      description: json['description'] ?? '',
+      attraction: json['Attraction'] != null ? Attraction.fromJson(json['Attraction']) : null,
+    );
+  }
+}
+
+class AgePricingModel {
+  final String label;
+  final double price;
+
+  AgePricingModel({required this.label, required this.price});
+
+  factory AgePricingModel.fromJson(Map<String, dynamic> json) {
+    return AgePricingModel(
+      label: json['age_group_label'],
+      price: double.parse(json['price'].toString()),
+    );
+  }
+}
+
+class TourDetailFull {
+  final Tour basicInfo;
+  final ProviderModel? provider;
+  final String? pickupPoint;
+  final List<TourImageModel> images;
+  final List<TourScheduleModel> schedules;
+  final List<AgePricingModel> agePricings;
+
+  TourDetailFull({
+    required this.basicInfo,
+    this.provider,
+    this.pickupPoint,
+    required this.images,
+    required this.schedules,
+    required this.agePricings,
+  });
+
+  factory TourDetailFull.fromJson(Map<String, dynamic> json) {
+    return TourDetailFull(
+      basicInfo: Tour.fromJson(json),
+      provider: json['Provider'] != null ? ProviderModel.fromJson(json['Provider']) : null,
+      pickupPoint: json['pickup_point'],
+      images: (json['Images'] as List? ?? [])
+          .map((item) => TourImageModel.fromJson(item))
+          .toList(),
+      schedules: (json['Schedules'] as List? ?? [])
+          .map((item) => TourScheduleModel.fromJson(item))
+          .toList(),
+      agePricings: (json['AgePricings'] as List? ?? [])
+          .map((item) => AgePricingModel.fromJson(item))
+          .toList(),
+    );
+  }
+}
+
 class LocationFullDetail {
   final Location basicInfo;
   final String description;

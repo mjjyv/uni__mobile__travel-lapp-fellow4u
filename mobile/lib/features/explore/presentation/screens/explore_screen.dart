@@ -11,6 +11,7 @@ import '../widgets/news_item.dart';
 import '../../../details/presentation/screens/tour_detail_screen.dart';
 import '../../../details/presentation/screens/guide_detail_screen.dart';
 import '../../../details/presentation/screens/destination_detail_screen.dart';
+import '../../categories/presentation/screens/category_extended_screen.dart';
 
 class ExploreScreen extends StatelessWidget {
   const ExploreScreen({super.key});
@@ -18,89 +19,131 @@ class ExploreScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Consumer<ExploreProvider>(
-          builder: (context, provider, child) {
-            if (provider.isLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
+      body: Consumer<ExploreProvider>(
+        builder: (context, provider, child) {
+          if (provider.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-            if (provider.error != null) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Error: ${provider.error}', textAlign: TextAlign.center),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () => provider.fetchExploreData(),
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
-              );
-            }
+          if (provider.error != null) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Error: ${provider.error}', textAlign: TextAlign.center),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () => provider.fetchExploreData(),
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            );
+          }
 
-            return RefreshIndicator(
-              onRefresh: () => provider.fetchExploreData(),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Header
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              const Text(
-                                'Explore',
-                                style: TextStyle(
-                                  fontSize: 34,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF333333),
+          return RefreshIndicator(
+            onRefresh: () => provider.fetchExploreData(),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header with Background Image and Overlays
+                  Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Container(
+                        height: 280,
+                        width: double.infinity,
+                        decoration: const BoxDecoration(
+                          image: DecorationImage(
+                            image: NetworkImage('https://images.unsplash.com/photo-1559592442-7e18259d69e7?q=80&w=1000&auto=format&fit=crop'),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 280,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.black.withOpacity(0.5),
+                              Colors.transparent,
+                              Colors.black.withOpacity(0.2),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        top: 60,
+                        left: 20,
+                        right: 20,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Explore',
+                                  style: TextStyle(
+                                    fontSize: 42,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                    letterSpacing: 1.2,
+                                  ),
                                 ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 8.0),
-                                child: Row(
-                                  children: const [
-                                    Icon(Icons.location_on, size: 16, color: Color(0xFF00CEA6)),
-                                    SizedBox(width: 4),
-                                    Text(
-                                      'Da Nang',
-                                      style: TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                      ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Row(
+                                      children: const [
+                                        Icon(Icons.location_on, size: 18, color: Colors.white),
+                                        SizedBox(width: 4),
+                                        Text(
+                                          'Da Nang',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    SizedBox(width: 12),
-                                    Icon(Icons.cloud_queue, size: 16, color: Colors.blue),
-                                    SizedBox(width: 4),
-                                    Text(
-                                      '26°C',
-                                      style: TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                      ),
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      children: const [
+                                        Icon(Icons.cloud_queue, size: 24, color: Colors.white),
+                                        SizedBox(width: 6),
+                                        Text(
+                                          '26°C',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 34,
+                                            fontWeight: FontWeight.w300,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-
-                    // Search Bar
-                    const CustomSearchBar(),
+                      Positioned(
+                        bottom: -30,
+                        left: 0,
+                        right: 0,
+                        child: const CustomSearchBar(readOnly: true),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 45),
 
                     // Top Journeys (Horizontal)
                     if (provider.featuredTours.isNotEmpty) ...[
@@ -130,7 +173,15 @@ class ExploreScreen extends StatelessWidget {
                     if (provider.bestGuides.isNotEmpty) ...[
                       SectionHeader(
                         title: 'Best Guides',
-                        onSeeAll: () {},
+                        onSeeAll: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const CategoryExtendedScreen(
+                              pageType: 'Guides_More',
+                              collectionSlug: 'best-guides',
+                            ),
+                          ),
+                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -185,7 +236,15 @@ class ExploreScreen extends StatelessWidget {
                     if (provider.featuredTours.isNotEmpty) ...[
                       SectionHeader(
                         title: 'Featured Tours',
-                        onSeeAll: () {},
+                        onSeeAll: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const CategoryExtendedScreen(
+                              pageType: 'Tours_More',
+                              collectionSlug: 'featured-tours',
+                            ),
+                          ),
+                        ),
                       ),
                       ListView.builder(
                         shrinkWrap: true,
