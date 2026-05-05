@@ -6,7 +6,7 @@ class AuthService {
 
   Future<Response> login(String email, String password) async {
     try {
-      final response = await _dio.post('/auth/login', data: {
+      final response = await _dio.post('auth/login', data: {
         'email': email,
         'password': password,
       });
@@ -24,7 +24,7 @@ class AuthService {
     required String roleType,
   }) async {
     try {
-      final response = await _dio.post('/auth/register', data: {
+      final response = await _dio.post('auth/register', data: {
         'first_name': firstName,
         'last_name': lastName,
         'email': email,

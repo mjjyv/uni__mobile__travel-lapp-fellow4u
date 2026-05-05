@@ -1,3 +1,4 @@
+# Docker Compose file for Fellow4U application
 version: '3.8'
 
 services:
@@ -24,7 +25,13 @@ services:
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: postgres://admin:P@ssword@db:5432/fellow4u
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: admin
+      DB_PASS: P@ssword
+      DB_NAME: fellow4u
+      JWT_SECRET: your_jwt_secret_key_here
+      NODE_ENV: development
     depends_on:
       - db
 

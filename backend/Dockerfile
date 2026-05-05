@@ -1,3 +1,4 @@
+# Dockerfile for Fellow4U backend application
 # Sử dụng node image bản nhẹ
 FROM node:18-alpine
 

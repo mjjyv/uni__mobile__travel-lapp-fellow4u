@@ -25,7 +25,13 @@ class AuthProvider extends ChangeNotifier {
       await _storage.write(key: 'jwt_token', value: _token);
       notifyListeners();
     } on DioException catch (e) {
-      _errorMessage = e.response?.data['message'] ?? 'Login failed';
+      if (e.type == DioExceptionType.connectionTimeout || 
+          e.type == DioExceptionType.receiveTimeout ||
+          e.type == DioExceptionType.connectionError) {
+        _errorMessage = 'Server is unreachable. Please check your connection.';
+      } else {
+        _errorMessage = e.response?.data['message'] ?? 'Login failed';
+      }
     } catch (e) {
       _errorMessage = 'An unexpected error occurred';
     } finally {
@@ -52,7 +58,13 @@ class AuthProvider extends ChangeNotifier {
       );
       // Optional: Auto login after register or navigate to login
     } on DioException catch (e) {
-      _errorMessage = e.response?.data['message'] ?? 'Registration failed';
+      if (e.type == DioExceptionType.connectionTimeout || 
+          e.type == DioExceptionType.receiveTimeout ||
+          e.type == DioExceptionType.connectionError) {
+        _errorMessage = 'Server is unreachable. Please check your connection.';
+      } else {
+        _errorMessage = e.response?.data['message'] ?? 'Registration failed';
+      }
     } catch (e) {
       _errorMessage = 'An unexpected error occurred';
     } finally {
