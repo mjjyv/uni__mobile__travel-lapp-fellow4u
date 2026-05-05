@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../features/explore/presentation/screens/explore_screen.dart';
+import '../../../explore/presentation/screens/explore_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
