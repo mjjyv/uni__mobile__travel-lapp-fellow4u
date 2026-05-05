@@ -1,4 +1,4 @@
-const { Tour, Experience, Location, GuideProfile, User, Review } = require('../models');
+const { Tour, Experience, Location, GuideProfile, User, Review, TourProvider, TourImage, TourSchedule, TourAgePricing, Attraction } = require('../models');
 
 exports.getTourDetail = async (req, res) => {
   try {
@@ -6,8 +6,14 @@ exports.getTourDetail = async (req, res) => {
     const tour = await Tour.findByPk(id, {
       include: [
         { model: Location },
-        // Tours usually don't belong to a single guide in the current schema, 
-        // but if they did, we would include guide info here.
+        { model: TourProvider, as: 'Provider' },
+        { model: TourImage, as: 'Images' },
+        { 
+          model: TourSchedule, 
+          as: 'Schedules',
+          include: [{ model: Attraction }]
+        },
+        { model: TourAgePricing, as: 'AgePricings' }
       ]
     });
 

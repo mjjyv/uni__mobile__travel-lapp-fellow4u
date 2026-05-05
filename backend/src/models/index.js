@@ -14,6 +14,10 @@ const GuidePricing = require('./GuidePricing');
 const Review = require('./Review');
 const Attraction = require('./Attraction');
 const PortfolioMedia = require('./PortfolioMedia');
+const TourProvider = require('./TourProvider');
+const TourImage = require('./TourImage');
+const TourSchedule = require('./TourSchedule');
+const TourAgePricing = require('./TourAgePricing');
 
 // Associations - Module 1
 User.belongsTo(Country, { foreignKey: 'country_id' });
@@ -71,6 +75,20 @@ Language.belongsToMany(GuideProfile, {
 Location.hasMany(Attraction, { foreignKey: 'location_id', as: 'Attractions' });
 Attraction.belongsTo(Location, { foreignKey: 'location_id' });
 
+// Associations - Module 4 (Tour Details)
+Tour.belongsTo(TourProvider, { foreignKey: 'provider_id', as: 'Provider' });
+TourProvider.hasMany(Tour, { foreignKey: 'provider_id' });
+
+Tour.hasMany(TourImage, { foreignKey: 'tour_id', as: 'Images' });
+TourImage.belongsTo(Tour, { foreignKey: 'tour_id' });
+
+Tour.hasMany(TourSchedule, { foreignKey: 'tour_id', as: 'Schedules' });
+TourSchedule.belongsTo(Tour, { foreignKey: 'tour_id' });
+TourSchedule.belongsTo(Attraction, { foreignKey: 'attraction_id' });
+
+Tour.hasMany(TourAgePricing, { foreignKey: 'tour_id', as: 'AgePricings' });
+TourAgePricing.belongsTo(Tour, { foreignKey: 'tour_id' });
+
 module.exports = {
   sequelize,
   User,
@@ -87,5 +105,9 @@ module.exports = {
   GuidePricing,
   Review,
   Attraction,
-  PortfolioMedia
+  PortfolioMedia,
+  TourProvider,
+  TourImage,
+  TourSchedule,
+  TourAgePricing
 };

@@ -39,6 +39,13 @@ const Tour = sequelize.define('Tour', {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
+  provider_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+  pickup_point: {
+    type: DataTypes.TEXT,
+  },
 }, {
   tableName: 'tours',
   timestamps: true,
