@@ -9,6 +9,7 @@ import 'features/auth/screens/forgot_password_screen.dart';
 import 'features/explore/presentation/provider/explore_provider.dart';
 import 'features/explore/presentation/screens/explore_screen.dart';
 import 'features/main/presentation/screens/main_screen.dart';
+import 'features/details/presentation/provider/detail_provider.dart';
 
 void main() {
   runApp(
@@ -16,6 +17,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => ExploreProvider()..fetchExploreData()),
+        ChangeNotifierProvider(create: (_) => DetailProvider()),
       ],
       child: const Fellow4UApp(),
     ),

@@ -13,6 +13,9 @@ app.use(express.json());
 // Routes
 const authRoutes = require('./src/routes/authRoutes');
 const exploreRoutes = require('./src/routes/exploreRoutes');
+const serviceRoutes = require('./src/routes/serviceRoutes');
+const guideRoutes = require('./src/routes/guideRoutes');
+const locationRoutes = require('./src/routes/locationRoutes');
 
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to Fellow4U API' });
@@ -20,6 +23,9 @@ app.get('/', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/explore', exploreRoutes);
+app.use('/api/services', serviceRoutes);
+app.use('/api/guides', guideRoutes);
+app.use('/api/locations', locationRoutes);
 
 // Database Connection & Server Start
 const startServer = async () => {

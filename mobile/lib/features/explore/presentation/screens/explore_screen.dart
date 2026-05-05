@@ -8,6 +8,9 @@ import '../widgets/tour_card.dart';
 import '../widgets/guide_card.dart';
 import '../widgets/experience_card.dart';
 import '../widgets/news_item.dart';
+import '../../../details/presentation/screens/tour_detail_screen.dart';
+import '../../../details/presentation/screens/guide_detail_screen.dart';
+import '../../../details/presentation/screens/destination_detail_screen.dart';
 
 class ExploreScreen extends StatelessWidget {
   const ExploreScreen({super.key});
@@ -109,7 +112,15 @@ class ExploreScreen extends StatelessWidget {
                           scrollDirection: Axis.horizontal,
                           itemCount: provider.featuredTours.length,
                           itemBuilder: (context, index) {
-                            return TourCard(tour: provider.featuredTours[index], isHorizontal: true);
+                            final tour = provider.featuredTours[index];
+                            return TourCard(
+                              tour: tour, 
+                              isHorizontal: true,
+                              onTap: () => Navigator.push(
+                                context, 
+                                MaterialPageRoute(builder: (_) => TourDetailScreen(tourId: tour.id))
+                              ),
+                            );
                           },
                         ),
                       ),
@@ -134,7 +145,14 @@ class ExploreScreen extends StatelessWidget {
                           ),
                           itemCount: provider.bestGuides.length.clamp(0, 4), // Limit to 4 for preview
                           itemBuilder: (context, index) {
-                            return GuideCard(guide: provider.bestGuides[index]);
+                            final guide = provider.bestGuides[index];
+                            return GuideCard(
+                              guide: guide,
+                              onTap: () => Navigator.push(
+                                context, 
+                                MaterialPageRoute(builder: (_) => GuideDetailScreen(guideId: guide.id))
+                              ),
+                            );
                           },
                         ),
                       ),
@@ -150,7 +168,14 @@ class ExploreScreen extends StatelessWidget {
                           scrollDirection: Axis.horizontal,
                           itemCount: provider.topExperiences.length,
                           itemBuilder: (context, index) {
-                            return ExperienceCard(experience: provider.topExperiences[index]);
+                            final exp = provider.topExperiences[index];
+                            return ExperienceCard(
+                              experience: exp,
+                              onTap: () => Navigator.push(
+                                context, 
+                                MaterialPageRoute(builder: (_) => TourDetailScreen(tourId: exp.id)) // Reuse tour detail or create exp detail
+                              ),
+                            );
                           },
                         ),
                       ),
@@ -168,7 +193,15 @@ class ExploreScreen extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         itemCount: provider.featuredTours.length,
                         itemBuilder: (context, index) {
-                          return TourCard(tour: provider.featuredTours[index], isHorizontal: false);
+                          final tour = provider.featuredTours[index];
+                          return TourCard(
+                            tour: tour, 
+                            isHorizontal: false,
+                            onTap: () => Navigator.push(
+                              context, 
+                              MaterialPageRoute(builder: (_) => TourDetailScreen(tourId: tour.id))
+                            ),
+                          );
                         },
                       ),
                     ],
