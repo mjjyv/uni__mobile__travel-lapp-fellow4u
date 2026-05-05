@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../data/models/category_models.dart';
-import '../data/services/category_service.dart';
+import '../../data/models/category_models.dart';
+import '../../data/services/category_service.dart';
 
 class CategoryProvider extends ChangeNotifier {
   final CategoryService _service = CategoryService();

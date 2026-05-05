@@ -1,4 +1,4 @@
-import '../../explore/data/models/explore_models.dart';
+import 'package:mobile/features/explore/data/models/explore_models.dart';
 
 class SearchResult {
   final List<Tour> tours;
@@ -25,19 +25,19 @@ class SearchResult {
 class SearchHistoryItem {
   final int id;
   final String keyword;
-  final DateTime searchAt;
+  final DateTime createdAt;
 
   SearchHistoryItem({
     required this.id,
     required this.keyword,
-    required this.searchAt,
+    required this.createdAt,
   });
 
   factory SearchHistoryItem.fromJson(Map<String, dynamic> json) {
     return SearchHistoryItem(
-      id: json['log_id'],
-      keyword: json['keyword'] ?? '',
-      searchAt: DateTime.parse(json['search_at']),
+      id: json['history_id'],
+      keyword: json['keyword'],
+      createdAt: DateTime.parse(json['created_at']),
     );
   }
 }

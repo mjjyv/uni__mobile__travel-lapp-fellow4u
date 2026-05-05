@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../data/models/search_models.dart';
-import '../data/services/search_service.dart';
+import '../../data/models/search_models.dart';
+import '../../data/services/search_service.dart';
 
 class SearchProvider extends ChangeNotifier {
   final SearchService _searchService = SearchService();

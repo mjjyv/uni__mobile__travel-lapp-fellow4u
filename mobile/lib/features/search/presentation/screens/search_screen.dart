@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../auth/providers/auth_provider.dart';
-import '../../../explore/presentation/widgets/tour_card.dart';
-import '../../../explore/presentation/widgets/guide_card.dart';
-import '../../data/models/search_models.dart';
-import '../provider/search_provider.dart';
-import '../../../details/presentation/screens/tour_detail_screen.dart';
-import '../../../details/presentation/screens/guide_detail_screen.dart';
-import '../../../details/presentation/screens/destination_detail_screen.dart';
+import 'package:mobile/features/auth/providers/auth_provider.dart';
+import 'package:mobile/features/explore/presentation/widgets/tour_card.dart';
+import 'package:mobile/features/explore/presentation/widgets/guide_card.dart';
+import 'package:mobile/features/explore/data/models/explore_models.dart';
+import 'package:mobile/features/search/data/models/search_models.dart';
+import 'package:mobile/features/search/presentation/provider/search_provider.dart';
+import 'package:mobile/features/details/presentation/screens/tour_detail_screen.dart';
+import 'package:mobile/features/details/presentation/screens/guide_detail_screen.dart';
+import 'package:mobile/features/details/presentation/screens/destination_detail_screen.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -141,27 +142,27 @@ class _SearchScreenState extends State<SearchScreen> {
         if (results.locations.isNotEmpty) ...[
           const Text('Locations', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 10),
-          ...results.locations.map((l) => ListTile(
+          ...results.locations.map((Location l) => ListTile(
             leading: const Icon(Icons.location_on, color: Color(0xFF00CEA6)),
             title: Text(l.name),
             onTap: () => Navigator.push(
               context, 
               MaterialPageRoute(builder: (_) => DestinationDetailScreen(locationId: l.id))
             ),
-          )),
+          )).toList(),
           const SizedBox(height: 20),
         ],
         if (results.tours.isNotEmpty) ...[
           const Text('Tours', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 10),
-          ...results.tours.map((t) => TourCard(
+          ...results.tours.map((Tour t) => TourCard(
             tour: t, 
             isHorizontal: false,
             onTap: () => Navigator.push(
               context, 
               MaterialPageRoute(builder: (_) => TourDetailScreen(tourId: t.id))
             ),
-          )),
+          )).toList(),
           const SizedBox(height: 20),
         ],
         if (results.guides.isNotEmpty) ...[
@@ -178,7 +179,7 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
             itemCount: results.guides.length,
             itemBuilder: (context, index) {
-              final guide = results.guides[index];
+              final Guide guide = results.guides[index];
               return GuideCard(
                 guide: guide,
                 onTap: () => Navigator.push(
@@ -197,7 +198,9 @@ class _SearchScreenState extends State<SearchScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (context) => const FilterSheet(),
     );
   }
@@ -217,53 +220,58 @@ class _FilterSheetState extends State<FilterSheet> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(20.0),
+      padding: EdgeInsets.only(
+        left: 20, right: 20, top: 20,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Filters', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          const Text('Filter', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
           const SizedBox(height: 20),
-          const Text('Price Range', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const Text('Price Range', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
           RangeSlider(
             values: _currentRange,
             min: 0,
             max: 1000,
             divisions: 20,
             activeColor: const Color(0xFF00CEA6),
-            labels: RangeLabels('\$${_currentRange.start.round()}', '\$${_currentRange.end.round()}'),
-            onChanged: (val) => setState(() => _currentRange = val),
+            labels: RangeLabels('$_currentRange.start', '$_currentRange.end'),
+            onChanged: (values) => setState(() => _currentRange = values),
           ),
           const SizedBox(height: 20),
-          const Text('Category', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const Text('Category', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
           const SizedBox(height: 10),
           Wrap(
             spacing: 10,
-            children: ['tour', 'guide', 'experience'].map((type) => ChoiceChip(
-              label: Text(type.toUpperCase()),
+            children: ['Tour', 'Guide', 'Experience'].map((type) => ChoiceChip(
+              label: Text(type),
               selected: _selectedType == type,
               onSelected: (val) => setState(() => _selectedType = val ? type : null),
               selectedColor: const Color(0xFF00CEA6).withOpacity(0.2),
             )).toList(),
           ),
           const SizedBox(height: 30),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF00CEA6),
-              minimumSize: const Size(double.infinity, 50),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF00CEA6),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              onPressed: () {
+                context.read<SearchProvider>().updateFilters(
+                  min: _currentRange.start,
+                  max: _currentRange.end,
+                  type: _selectedType,
+                );
+                Navigator.pop(context);
+              },
+              child: const Text('Apply Filters', style: TextStyle(color: Colors.white, fontSize: 16)),
             ),
-            onPressed: () {
-              context.read<SearchProvider>().updateFilters(
-                min: _currentRange.start,
-                max: _currentRange.end,
-                type: _selectedType,
-              );
-              Navigator.pop(context);
-            },
-            child: const Text('Apply Filters', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
           ),
-          const SizedBox(height: 20),
         ],
       ),
     );

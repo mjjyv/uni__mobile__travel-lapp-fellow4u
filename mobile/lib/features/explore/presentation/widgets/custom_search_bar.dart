@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../search/presentation/screens/search_screen.dart';
+import '../../../search/presentation/screens/search_screen.dart';
 
 class CustomSearchBar extends StatelessWidget {
   final TextEditingController? controller;
@@ -19,7 +19,7 @@ class CustomSearchBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: readOnly 
-        ? () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SearchScreen()))
+        ? () => Navigator.push(context, MaterialPageRoute(builder: (_) => SearchScreen()))
         : onTap,
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
