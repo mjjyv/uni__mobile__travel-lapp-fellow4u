@@ -1,5 +1,6 @@
 const { Op } = require('sequelize');
-const { Tour, GuideProfile, Location, User, SearchHistory, Review } = require('../models');
+const sequelize = require('../config/database');
+const { Tour, GuideProfile, Location, User, SearchHistory } = require('../models');
 
 exports.globalSearch = async (req, res) => {
   try {
@@ -11,7 +12,7 @@ exports.globalSearch = async (req, res) => {
       await SearchHistory.create({
         user_id: userId,
         keyword: q,
-        filters_applied: req.query
+        filters_applied: JSON.stringify(req.query)
       });
     }
 
@@ -52,7 +53,12 @@ exports.globalSearch = async (req, res) => {
         include: [
           { 
             model: User, 
-            where: q ? { name: { [Op.iLike]: `%${q}%` } } : {} 
+            where: q ? {
+              [Op.or]: [
+                { first_name: { [Op.iLike]: `%${q}%` } },
+                { last_name: { [Op.iLike]: `%${q}%` } }
+              ]
+            } : {} 
           },
           { model: Location, as: 'BaseLocation' }
         ]
@@ -87,8 +93,9 @@ exports.getPopularSearches = async (req, res) => {
       order: [[sequelize.literal('search_count'), 'DESC']],
       limit: 10
     });
-    res.json({ success: true, data: popular });
+    res.json({ success: true, data: popular.map(p => p.get('keyword')) });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ success: false, message: 'Could not fetch popular searches' });
   }
 };
@@ -102,6 +109,7 @@ exports.getUserSearchHistory = async (req, res) => {
     });
     res.json({ success: true, data: history });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ success: false, message: 'Could not fetch history' });
   }
 };

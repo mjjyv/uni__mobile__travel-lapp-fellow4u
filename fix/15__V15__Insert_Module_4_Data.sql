@@ -16,9 +16,9 @@ WHERE title LIKE '%Da Nang%' OR title LIKE '%Hoi An%';
 
 -- 3. Thêm Thư viện ảnh (Images) cho Tour ID 1 (Giả định là tour Đà Nẵng)
 INSERT INTO tour_images (tour_id, image_url, display_order, caption) VALUES
-(1, 'https://images.unsplash.com/photo-1559592481-74488ea55b46', 1, 'Bana Hills SunWorld'),
-(1, 'https://images.unsplash.com/photo-1528127269322-539801943592', 2, 'Golden Bridge Hand'),
-(1, 'https://images.unsplash.com/photo-1583417319070-4a69db38a482', 3, 'My Khe Beach at Sunset')
+(1, 'https://ohdidi.vn/uploads/static/NEWS/blog/du%20lich%20da%20nang%20hoi%20an/du_lich_da_nang_hoi_an_2.png', 1, 'Da Nang - Hoi An Overview'),
+(1, 'https://images2.thanhnien.vn/528068263637045248/2025/6/18/the-legend-danang-1-17502421275011965589401.jpg', 2, 'Dragon Bridge'),
+(1, 'https://cdn.vntrip.vn/cam-nang/wp-content/uploads/2017/08/Nui-Ngu-Hanh-Son.png', 3, 'Marble Mountains')
 ON CONFLICT DO NOTHING;
 
 -- 4. Thêm Lịch trình (Schedules) cho Tour ID 1

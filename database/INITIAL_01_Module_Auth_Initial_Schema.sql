@@ -5,12 +5,11 @@
 -- =============================================================================
 
 -- 1. Khởi tạo các kiểu dữ liệu ENUM (Custom Types)
-DO $$ 
+DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'role_type') THEN
         CREATE TYPE role_type AS ENUM ('Traveler', 'Guide');
     END IF;
-
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'social_provider') THEN
         CREATE TYPE social_provider AS ENUM ('FB', 'Kakao', 'Line');
     END IF;
@@ -81,10 +80,4 @@ CREATE TRIGGER update_users_modtime
     FOR EACH ROW
     EXECUTE PROCEDURE update_updated_at_column();
 
--- 8. Dữ liệu mẫu ban đầu (Initial Seed Data)
-INSERT INTO countries (country_name, country_code) VALUES 
-('Vietnam', '+84'),
-('Korea', '+82'),
-('United States', '+1'),
-('Thailand', '+66')
-ON CONFLICT DO NOTHING;
+-- LƯU Ý: Dữ liệu mẫu (Countries) đã được chuyển sang file Seed riêng.

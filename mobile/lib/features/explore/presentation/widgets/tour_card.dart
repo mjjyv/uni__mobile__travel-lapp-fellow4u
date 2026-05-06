@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../data/models/explore_models.dart';
+import 'package:mobile/features/explore/data/models/explore_models.dart';
+import 'package:provider/provider.dart';
+import 'package:mobile/features/auth/providers/auth_provider.dart';
+import 'package:mobile/features/details/presentation/provider/wishlist_provider.dart';
 
 class TourCard extends StatelessWidget {
   final Tour tour;
@@ -47,12 +50,30 @@ class TourCard extends StatelessWidget {
                     height: 160,
                     width: double.infinity,
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      height: 160,
+                      color: Colors.grey.shade200,
+                      child: const Icon(Icons.image_not_supported, color: Colors.grey),
+                    ),
                   ),
                 ),
                 Positioned(
                   top: 12,
                   right: 12,
-                  child: const Icon(Icons.bookmark_border, color: Colors.white, size: 28),
+                  child: Consumer2<AuthProvider, WishlistProvider>(
+                    builder: (context, auth, wishlist, _) => IconButton(
+                      icon: Icon(
+                        wishlist.isFavorite(tour.id, isTour: true) ? Icons.favorite : Icons.favorite_border,
+                        color: wishlist.isFavorite(tour.id, isTour: true) ? Colors.red : Colors.white,
+                        size: 28,
+                      ),
+                      onPressed: () {
+                        if (auth.token != null) {
+                          wishlist.toggleWishlist(auth.token!, tourId: tour.id);
+                        }
+                      },
+                    ),
+                  ),
                 ),
                 Positioned(
                   bottom: 12,
@@ -166,13 +187,26 @@ class TourCard extends StatelessWidget {
                 Positioned(
                   top: 15,
                   right: 15,
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
+                  child: Consumer2<AuthProvider, WishlistProvider>(
+                    builder: (context, auth, wishlist, _) => GestureDetector(
+                      onTap: () {
+                        if (auth.token != null) {
+                          wishlist.toggleWishlist(auth.token!, tourId: tour.id);
+                        }
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          wishlist.isFavorite(tour.id, isTour: true) ? Icons.favorite : Icons.favorite_border,
+                          size: 20,
+                          color: wishlist.isFavorite(tour.id, isTour: true) ? Colors.red : const Color(0xFF00CEA6),
+                        ),
+                      ),
                     ),
-                    child: const Icon(Icons.favorite_border, size: 20, color: Color(0xFF00CEA6)),
                   ),
                 ),
                 Positioned(
@@ -202,7 +236,21 @@ class TourCard extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const Icon(Icons.favorite_border, color: Color(0xFF00CEA6)),
+                      Consumer2<AuthProvider, WishlistProvider>(
+                        builder: (context, auth, wishlist, _) => IconButton(
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          icon: Icon(
+                            wishlist.isFavorite(tour.id, isTour: true) ? Icons.favorite : Icons.favorite_border,
+                            color: wishlist.isFavorite(tour.id, isTour: true) ? Colors.red : const Color(0xFF00CEA6),
+                          ),
+                          onPressed: () {
+                            if (auth.token != null) {
+                              wishlist.toggleWishlist(auth.token!, tourId: tour.id);
+                            }
+                          },
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 8),

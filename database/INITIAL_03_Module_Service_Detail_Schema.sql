@@ -8,7 +8,7 @@
 CREATE TABLE IF NOT EXISTS languages (
     lang_id SERIAL PRIMARY KEY,
     lang_name VARCHAR(50) UNIQUE NOT NULL,
-    lang_code CHAR(2) -- Ví dụ: 'en', 'vi', 'kr'
+    lang_code CHAR(2) UNIQUE -- Ví dụ: 'en', 'vi', 'kr'
 );
 
 -- Bảng trung gian Guide - Ngôn ngữ
@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS attractions (
 );
 
 -- 5. Kho tư liệu Guide (Portfolio Media)
-DO $$ 
+DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'portfolio_media_type') THEN
         CREATE TYPE portfolio_media_type AS ENUM ('image', 'video');
@@ -76,10 +76,4 @@ CREATE INDEX IF NOT EXISTS idx_reviews_guide_id ON reviews(guide_id);
 CREATE INDEX IF NOT EXISTS idx_attractions_location ON attractions(location_id);
 CREATE INDEX IF NOT EXISTS idx_attractions_name_trgm ON attractions USING gin (name gin_trgm_ops); -- Hỗ trợ Autocomplete nhanh
 
--- 7. Dữ liệu mẫu (Seed Data)
-INSERT INTO languages (lang_name, lang_code) VALUES 
-('Vietnamese', 'vi'),
-('English', 'en'),
-('Korean', 'kr'),
-('Japanese', 'jp')
-ON CONFLICT DO NOTHING;
+-- LƯU Ý: Dữ liệu mẫu (Languages) đã được chuyển sang file Seed riêng.

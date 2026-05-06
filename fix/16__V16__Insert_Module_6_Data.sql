@@ -6,8 +6,8 @@
 -- 1. KHỞI TẠO BANNER CHO TRANG DANH MỤC (App_Banners)
 -- -----------------------------------------------------------------------------
 INSERT INTO app_banners (page_type, title_text, subtitle_text, image_url, is_active) VALUES 
-('Guides_More', 'Private Local Guides', 'Find the perfect companion for your journey', 'https://images.unsplash.com/photo-1527631746610-bca00a040d60', TRUE),
-('Tours_More', 'Discovery Tours', 'Authentic experiences curated by locals', 'https://images.unsplash.com/photo-1503221043305-f7498f8b7888', TRUE)
+('Guides_More', 'Private Local Guides', 'Find the perfect companion for your journey', 'https://www.agoda.com/wp-content/uploads/2019/05/Gyeongbokgung-palace-Seoul-architecture-view.jpg', TRUE),
+('Tours_More', 'Discovery Tours', 'Authentic experiences curated by locals', 'https://ohdidi.vn/uploads/static/NEWS/blog/du%20lich%20da%20nang%20hoi%20an/du_lich_da_nang_hoi_an_2.png', TRUE)
 ON CONFLICT DO NOTHING;
 
 

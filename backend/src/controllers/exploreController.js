@@ -15,7 +15,7 @@ exports.getExploreData = async (req, res) => {
     });
 
     const bestGuides = await GuideProfile.findAll({
-      include: [{ model: User, attributes: ['first_name', 'last_name'] }, { model: Location, as: 'BaseLocation' }],
+      include: [{ model: User, attributes: ['first_name', 'last_name', 'avatar_url'] }, { model: Location, as: 'BaseLocation' }],
       order: [['rating_avg', 'DESC']],
       limit: 5,
     });

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../data/models/explore_models.dart';
+import 'package:mobile/features/explore/data/models/explore_models.dart';
+import 'package:provider/provider.dart';
+import 'package:mobile/features/auth/providers/auth_provider.dart';
+import 'package:mobile/features/details/presentation/provider/wishlist_provider.dart';
 
 class ExperienceCard extends StatelessWidget {
   final Experience experience;
@@ -32,6 +35,31 @@ class ExperienceCard extends StatelessWidget {
                       height: double.infinity,
                       width: double.infinity,
                       fit: BoxFit.cover,
+                    ),
+                  ),
+                  Positioned(
+                    top: 10,
+                    right: 10,
+                    child: Consumer2<AuthProvider, WishlistProvider>(
+                      builder: (context, auth, wishlist, _) => GestureDetector(
+                        onTap: () {
+                          if (auth.token != null) {
+                            wishlist.toggleWishlist(auth.token!, expId: experience.id);
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: const BoxDecoration(
+                            color: Colors.white70,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            wishlist.isFavorite(experience.id, isTour: false) ? Icons.favorite : Icons.favorite_border,
+                            size: 18,
+                            color: wishlist.isFavorite(experience.id, isTour: false) ? Colors.red : Colors.black54,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                   Positioned(

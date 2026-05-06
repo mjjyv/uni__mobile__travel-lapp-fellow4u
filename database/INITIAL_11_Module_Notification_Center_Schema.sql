@@ -5,7 +5,7 @@
 -- =============================================================================
 
 -- 1. Khởi tạo kiểu dữ liệu cho loại thông báo
-DO $$ 
+DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'notification_category') THEN
         CREATE TYPE notification_category AS ENUM (
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS notification_templates (
     template_id SERIAL PRIMARY KEY,
     category notification_category NOT NULL,
     template_key VARCHAR(50) UNIQUE NOT NULL, -- Ví dụ: 'BOOKING_ACCEPTED_TEMPLATE'
-    title_pattern TEXT NOT NULL,  -- Ví dụ: "Chuyến đi đã sẵn sàng!"
+    title_pattern TEXT NOT NULL,  -- Ví dụ:"Chuyến đi đã sẵn sàng!"
     body_pattern TEXT NOT NULL,   -- Ví dụ: "{guide_name} đã chấp nhận yêu cầu của bạn tại {location}."
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -34,22 +34,21 @@ CREATE TABLE IF NOT EXISTS notification_templates (
 CREATE TABLE IF NOT EXISTS notifications (
     notif_id SERIAL PRIMARY KEY,
     user_id INT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
-    
     category notification_category NOT NULL,
     title VARCHAR(255) NOT NULL,
     message TEXT NOT NULL,
-    
+
     -- Dữ liệu hỗ trợ Deep-linking (Nhấn vào thông báo mở đúng màn hình)
     related_entity_type VARCHAR(50), -- 'booking', 'review', 'chat', 'news'
     related_entity_id INT,           -- ID của booking_id, news_id,...
-    
+
     -- Trạng thái
     is_read BOOLEAN DEFAULT FALSE,
     read_at TIMESTAMP WITH TIME ZONE,
-    
+
     -- Lưu trữ thêm dữ liệu linh hoạt (ví dụ: avatar người gửi, link ảnh)
     extra_data JSONB, 
-    
+
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -69,8 +68,4 @@ BEGIN
 END;
 $$;
 
--- 6. Dữ liệu mẫu cho các Template phổ biến
-INSERT INTO notification_templates (category, template_key, title_pattern, body_pattern) VALUES 
-('booking_update', 'BOOKING_REJECTED', 'Yêu cầu bị từ chối', 'Rất tiếc, Guide đã từ chối yêu cầu của bạn.'),
-('review_reminder', 'LEAVE_REVIEW', 'Kỷ niệm chuyến đi', 'Chuyến đi đã kết thúc, hãy để lại đánh giá cho {guide_name} nhé!')
-ON CONFLICT DO NOTHING;
+-- LƯU Ý: Dữ liệu mẫu (Notification Templates) đã được chuyển sang file Seed riêng.

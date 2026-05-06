@@ -12,12 +12,20 @@ import 'package:mobile/features/details/presentation/screens/tour_detail_screen.
 import 'package:mobile/features/details/presentation/screens/guide_detail_screen.dart';
 import 'package:mobile/features/details/presentation/screens/destination_detail_screen.dart';
 import 'package:mobile/features/categories/presentation/screens/category_extended_screen.dart';
+import 'package:mobile/features/auth/providers/auth_provider.dart';
+import 'package:mobile/features/details/presentation/provider/wishlist_provider.dart';
 
 class ExploreScreen extends StatelessWidget {
   const ExploreScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final token = context.read<AuthProvider>().token;
+      if (token != null) {
+        context.read<WishlistProvider>().fetchWishlist(token);
+      }
+    });
     return Scaffold(
       body: Consumer<ExploreProvider>(
         builder: (context, provider, child) {
@@ -56,7 +64,7 @@ class ExploreScreen extends StatelessWidget {
                         width: double.infinity,
                         decoration: const BoxDecoration(
                           image: DecorationImage(
-                            image: NetworkImage('https://images.unsplash.com/photo-1559592442-7e18259d69e7?q=80&w=1000&auto=format&fit=crop'),
+                            image: NetworkImage('https://images2.thanhnien.vn/528068263637045248/2025/6/18/the-legend-danang-1-17502421275011965589401.jpg'),
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -149,7 +157,7 @@ class ExploreScreen extends StatelessWidget {
                   if (provider.featuredTours.isNotEmpty) ...[
                     const SectionHeader(title: 'Top Journeys'),
                     SizedBox(
-                      height: 280,
+                      height: 340,
                       child: ListView.builder(
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         scrollDirection: Axis.horizontal,
@@ -213,7 +221,7 @@ class ExploreScreen extends StatelessWidget {
                   if (provider.topExperiences.isNotEmpty) ...[
                     const SectionHeader(title: 'Top Experiences'),
                     SizedBox(
-                      height: 220,
+                      height: 240,
                       child: ListView.builder(
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         scrollDirection: Axis.horizontal,
@@ -222,10 +230,10 @@ class ExploreScreen extends StatelessWidget {
                           final exp = provider.topExperiences[index];
                           return ExperienceCard(
                             experience: exp,
-                            onTap: () => Navigator.push(
-                              context, 
-                              MaterialPageRoute(builder: (_) => TourDetailScreen(tourId: exp.id))
-                            ),
+                            onTap: () {
+                              // TODO: Navigate to ExperienceDetailScreen when implemented
+                              // Navigator.push(context, MaterialPageRoute(builder: (_) => ExperienceDetailScreen(expId: exp.id)));
+                            },
                           );
                         },
                       ),

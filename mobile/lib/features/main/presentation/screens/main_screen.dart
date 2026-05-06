@@ -61,9 +61,9 @@ class _MainScreenState extends State<MainScreen> {
               label: 'Explore',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.location_on_outlined),
-              activeIcon: Icon(Icons.location_on),
-              label: 'Location',
+              icon: Icon(Icons.card_travel_outlined),
+              activeIcon: Icon(Icons.card_travel),
+              label: 'My Trips',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.chat_bubble_outline),

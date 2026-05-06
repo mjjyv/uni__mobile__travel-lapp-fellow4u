@@ -22,6 +22,9 @@ app.use('/api/guides', require('./src/routes/guideRoutes'));
 app.use('/api/locations', require('./src/routes/locationRoutes'));
 app.use('/api/search', require('./src/routes/searchRoutes'));
 app.use('/api/categories', require('./src/routes/categoryRoutes'));
+app.use('/api/wishlist', require('./src/routes/wishlistRoutes'));
+app.use('/api/bookings', require('./src/routes/bookingRoutes'));
+
 
 // Database Connection & Server Start
 const startServer = async () => {

@@ -12,6 +12,7 @@ import 'features/main/presentation/screens/main_screen.dart';
 import 'features/details/presentation/provider/detail_provider.dart';
 import 'features/search/presentation/provider/search_provider.dart';
 import 'features/categories/presentation/provider/category_provider.dart';
+import 'features/details/presentation/provider/wishlist_provider.dart';
 
 void main() {
   runApp(
@@ -22,6 +23,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => DetailProvider()),
         ChangeNotifierProvider(create: (_) => SearchProvider()),
         ChangeNotifierProvider(create: (_) => CategoryProvider()),
+        ChangeNotifierProvider(create: (_) => WishlistProvider()),
       ],
       child: const Fellow4UApp(),
     ),

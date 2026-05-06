@@ -39,15 +39,15 @@ ON CONFLICT DO NOTHING;
 -- -----------------------------------------------------------------------------
 -- Đà Nẵng Attractions
 INSERT INTO attractions (location_id, name, address, description, image_url) VALUES 
-((SELECT location_id FROM locations WHERE city_name = 'Da Nang'), 'Cầu Rồng (Dragon Bridge)', 'An Hải Tây, Sơn Trà, Đà Nẵng', 'Biểu tượng của sự thịnh vượng, phun lửa và nước vào cuối tuần.', 'https://danangfantasticity.com/wp-content/uploads/2019/01/telegraph-dragon-bridge.jpg'),
-((SELECT location_id FROM locations WHERE city_name = 'Da Nang'), 'Ngũ Hành Sơn (Marble Mountains)', 'Hòa Hải, Ngũ Hành Sơn, Đà Nẵng', 'Quần thể 5 ngọn núi đá vôi với các hang động và chùa chiền cổ kính.', 'https://Reviewdanang.net/wp-content/uploads/2021/08/ngu-hanh-son-da-nang.jpg'),
-((SELECT location_id FROM locations WHERE city_name = 'Da Nang'), 'Cộng Cà Phê', '98-96 Bạch Đằng, Đà Nẵng', 'Quán cà phê phong cách bao cấp nổi tiếng, view sông Hàn.', 'https://congcaphe.com/uploads/stores/123.jpg')
+((SELECT location_id FROM locations WHERE city_name = 'Da Nang'), 'Cầu Rồng (Dragon Bridge)', 'An Hải Tây, Sơn Trà, Đà Nẵng', 'Biểu tượng của sự thịnh vượng, phun lửa và nước vào cuối tuần.', 'https://images2.thanhnien.vn/528068263637045248/2025/6/18/the-legend-danang-1-17502421275011965589401.jpg'),
+((SELECT location_id FROM locations WHERE city_name = 'Da Nang'), 'Ngũ Hành Sơn (Marble Mountains)', 'Hòa Hải, Ngũ Hành Sơn, Đà Nẵng', 'Quần thể 5 ngọn núi đá vôi với các hang động và chùa chiền cổ kính.', 'https://cdn.vntrip.vn/cam-nang/wp-content/uploads/2017/08/Nui-Ngu-Hanh-Son.png'),
+((SELECT location_id FROM locations WHERE city_name = 'Da Nang'), 'Cộng Cà Phê', '98-96 Bạch Đằng, Đà Nẵng', 'Quán cà phê phong cách bao cấp nổi tiếng, view sông Hàn.', 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/10/b2/1f/5a/come-at-night-with-less.jpg?w=900&h=500&s=1')
 ON CONFLICT DO NOTHING;
 
 -- Seoul Attractions
 INSERT INTO attractions (location_id, name, address, description, image_url) VALUES 
-((SELECT location_id FROM locations WHERE city_name = 'Seoul'), 'Gyeongbokgung Palace', '161 Sajik-ro, Jongno-gu, Seoul', 'Cung điện lớn nhất và quan trọng nhất của triều đại Joseon.', 'https://media.cntraveler.com/photos/5b32607973c7373f1d820542/master/pass/Gyeongbokgung-Palace-GettyImages-534125861.jpg'),
-((SELECT location_id FROM locations WHERE city_name = 'Seoul'), 'Bukchon Hanok Village', 'Jongno-gu, Seoul', 'Làng cổ lưu giữ hàng trăm ngôi nhà truyền thống Hàn Quốc.', 'https://images.lifestyleasia.com/wp-content/uploads/sites/6/2023/04/18163503/bukchon-hanok-village.jpg')
+((SELECT location_id FROM locations WHERE city_name = 'Seoul'), 'Gyeongbokgung Palace', '161 Sajik-ro, Jongno-gu, Seoul', 'Cung điện lớn nhất và quan trọng nhất của triều đại Joseon.', 'https://www.agoda.com/wp-content/uploads/2019/05/Gyeongbokgung-palace-Seoul-architecture-view.jpg'),
+((SELECT location_id FROM locations WHERE city_name = 'Seoul'), 'Bukchon Hanok Village', 'Jongno-gu, Seoul', 'Làng cổ lưu giữ hàng trăm ngôi nhà truyền thống Hàn Quốc.', 'https://vj-prod-website-cms.s3.ap-southeast-1.amazonaws.com/t1-1715750175103.jpg')
 ON CONFLICT DO NOTHING;
 
 
@@ -63,9 +63,9 @@ ON CONFLICT DO NOTHING;
 -- 5. KHO TƯ LIỆU GUIDE (Portfolio Media)
 -- -----------------------------------------------------------------------------
 INSERT INTO guide_portfolio_media (guide_id, media_url, media_type, title, display_order) VALUES 
-((SELECT user_id FROM users WHERE email = 'anh.nguyen@fellow4u.com'), 'https://cdn.fellow4u.com/portfolio/anh_food_tour.jpg', 'image', 'Street Food Tour with US guests', 1),
+((SELECT user_id FROM users WHERE email = 'anh.nguyen@fellow4u.com'), 'https://thanhnien.mediacdn.vn/Uploaded/ngocthanh/2016_03_23/9x01_YGEO.jpg?width=500', 'image', 'Street Food Tour with US guests', 1),
 ((SELECT user_id FROM users WHERE email = 'anh.nguyen@fellow4u.com'), 'https://cdn.fellow4u.com/portfolio/anh_video_intro.mp4', 'video', 'Introduction to Da Nang', 2),
-((SELECT user_id FROM users WHERE email = 'jiwon.park@fellow4u.com'), 'https://cdn.fellow4u.com/portfolio/jiwon_hanbok.jpg', 'image', 'Traditional Hanbok Experience', 1)
+((SELECT user_id FROM users WHERE email = 'jiwon.park@fellow4u.com'), 'https://www.paratime.vn/wp-content/uploads/2019/09/timestudio.vn-headshot-eye-glasses-02.jpg', 'image', 'Traditional Hanbok Experience', 1)
 ON CONFLICT DO NOTHING;
 
 

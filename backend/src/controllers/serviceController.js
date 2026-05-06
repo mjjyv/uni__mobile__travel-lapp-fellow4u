@@ -21,7 +21,39 @@ exports.getTourDetail = async (req, res) => {
       return res.status(404).json({ message: 'Tour not found' });
     }
 
-    res.status(200).json(tour);
+    // Deduplicate associations to prevent duplicates from multiple joins
+    const result = tour.toJSON();
+    
+    if (result.Schedules) {
+      const seen = new Set();
+      result.Schedules = result.Schedules.filter(s => {
+        const key = `${s.day_number}-${s.start_time}-${s.activity_title}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+    }
+
+    if (result.Images) {
+      const seen = new Set();
+      result.Images = result.Images.filter(img => {
+        if (seen.has(img.image_url)) return false;
+        seen.add(img.image_url);
+        return true;
+      });
+    }
+
+    if (result.AgePricings) {
+      const seen = new Set();
+      result.AgePricings = result.AgePricings.filter(p => {
+        const key = `${p.age_group_label}-${p.price}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+    }
+
+    res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching tour detail', error: error.message });
   }

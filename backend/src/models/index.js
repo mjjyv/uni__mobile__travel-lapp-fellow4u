@@ -24,6 +24,10 @@ const AppBanner = require('./AppBanner');
 const Collection = require('./Collection');
 const CollectionGuide = require('./CollectionGuide');
 const CollectionTour = require('./CollectionTour');
+const Booking = require('./Booking');
+const BookingBid = require('./BookingBid');
+const BookingStatusHistory = require('./BookingStatusHistory');
+
 
 // Associations - Module 1
 User.belongsTo(Country, { foreignKey: 'country_id' });
@@ -127,6 +131,26 @@ Tour.belongsToMany(Collection, {
   otherKey: 'collection_id' 
 });
 
+// Associations - Module 7 (Trip Management & Workflow)
+User.hasMany(Booking, { foreignKey: 'traveler_id', as: 'TravelerBookings' });
+Booking.belongsTo(User, { foreignKey: 'traveler_id', as: 'Traveler' });
+
+GuideProfile.hasMany(Booking, { foreignKey: 'guide_id', as: 'GuideBookings' });
+Booking.belongsTo(GuideProfile, { foreignKey: 'guide_id', as: 'Guide' });
+
+Tour.hasMany(Booking, { foreignKey: 'tour_id' });
+Booking.belongsTo(Tour, { foreignKey: 'tour_id' });
+
+Booking.hasMany(BookingBid, { foreignKey: 'booking_id', as: 'Bids' });
+BookingBid.belongsTo(Booking, { foreignKey: 'booking_id' });
+
+BookingBid.belongsTo(GuideProfile, { foreignKey: 'guide_id', as: 'Guide' });
+GuideProfile.hasMany(BookingBid, { foreignKey: 'guide_id' });
+
+Booking.hasMany(BookingStatusHistory, { foreignKey: 'booking_id', as: 'StatusHistory' });
+BookingStatusHistory.belongsTo(Booking, { foreignKey: 'booking_id' });
+
+
 module.exports = {
   sequelize,
   User,
@@ -153,5 +177,9 @@ module.exports = {
   AppBanner,
   Collection,
   CollectionGuide,
-  CollectionTour
+  CollectionTour,
+  Booking,
+  BookingBid,
+  BookingStatusHistory
 };
+

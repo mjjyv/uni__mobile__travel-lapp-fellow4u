@@ -7,7 +7,7 @@
 -- 1. Bảng Providers (Đơn vị cung cấp tour)
 CREATE TABLE IF NOT EXISTS tour_providers (
     provider_id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(255) UNIQUE NOT NULL,
     website_url TEXT,
     logo_url TEXT,
     rating_avg FLOAT DEFAULT 0.0,

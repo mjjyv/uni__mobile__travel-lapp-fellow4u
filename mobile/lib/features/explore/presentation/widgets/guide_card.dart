@@ -21,12 +21,16 @@ class GuideCard extends StatelessWidget {
           Expanded(
             child: Stack(
               children: [
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    image: DecorationImage(
-                      image: NetworkImage(guide.avatarUrl),
-                      fit: BoxFit.cover,
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.network(
+                    guide.avatarUrl.isNotEmpty ? guide.avatarUrl : 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
+                    height: double.infinity,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      color: Colors.grey.shade200,
+                      child: const Icon(Icons.person, size: 40, color: Colors.grey),
                     ),
                   ),
                 ),
