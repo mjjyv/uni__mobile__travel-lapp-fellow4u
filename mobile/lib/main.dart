@@ -13,6 +13,8 @@ import 'features/details/presentation/provider/detail_provider.dart';
 import 'features/search/presentation/provider/search_provider.dart';
 import 'features/categories/presentation/provider/category_provider.dart';
 import 'features/details/presentation/provider/wishlist_provider.dart';
+import 'features/trips/presentation/provider/trips_provider.dart';
+
 
 void main() {
   runApp(
@@ -24,6 +26,8 @@ void main() {
         ChangeNotifierProvider(create: (_) => SearchProvider()),
         ChangeNotifierProvider(create: (_) => CategoryProvider()),
         ChangeNotifierProvider(create: (_) => WishlistProvider()),
+        ChangeNotifierProvider(create: (_) => TripsProvider()),
+
       ],
       child: const Fellow4UApp(),
     ),
