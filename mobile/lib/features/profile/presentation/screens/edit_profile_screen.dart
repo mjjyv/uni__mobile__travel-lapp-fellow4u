@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../auth/providers/auth_provider.dart';
+import '../provider/profile_provider.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -11,56 +14,82 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _firstNameController;
   late TextEditingController _lastNameController;
-  late TextEditingController _bioController;
 
   @override
   void initState() {
     super.initState();
-    _firstNameController = TextEditingController(text: 'Emily');
-    _lastNameController = TextEditingController(text: 'Johnson');
-    _bioController = TextEditingController(text: 'Adventure seeker & Travel Blogger');
+    final profile = context.read<ProfileProvider>().profile;
+    _firstNameController = TextEditingController(text: profile?.firstName ?? '');
+    _lastNameController = TextEditingController(text: profile?.lastName ?? '');
   }
 
   @override
   void dispose() {
     _firstNameController.dispose();
     _lastNameController.dispose();
-    _bioController.dispose();
     super.dispose();
+  }
+
+  Future<void> _handleSave() async {
+    if (_formKey.currentState!.validate()) {
+      final token = context.read<AuthProvider>().token;
+      if (token == null) return;
+
+      final success = await context.read<ProfileProvider>().updateProfile({
+        'first_name': _firstNameController.text,
+        'last_name': _lastNameController.text,
+      }, token);
+
+      if (mounted) {
+        if (success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Profile updated successfully')),
+          );
+          Navigator.pop(context);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(context.read<ProfileProvider>().error ?? 'Update failed')),
+          );
+        }
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = context.watch<ProfileProvider>().isLoading;
+    final user = context.watch<ProfileProvider>().profile;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.close, color: Colors.black, size: 28),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'Edit Profile',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
+        centerTitle: true,
         actions: [
-          TextButton(
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                // Save logic
-                Navigator.pop(context);
-              }
-            },
-            child: const Text(
-              'Save',
-              style: TextStyle(
-                color: Color(0xFF00CEA6),
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
+          if (isLoading)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.only(right: 16),
+                child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+              ),
+            )
+          else
+            TextButton(
+              onPressed: _handleSave,
+              child: const Text(
+                'SAVE',
+                style: TextStyle(color: Color(0xFF00CEA6), fontWeight: FontWeight.bold, fontSize: 16),
               ),
             ),
-          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -70,44 +99,69 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Avatar with camera icon
               Center(
                 child: Stack(
                   children: [
-                    const CircleAvatar(
-                      radius: 60,
-                      backgroundImage: NetworkImage('https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1974&auto=format&fit=crop'),
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundImage: NetworkImage(user?.avatarUrl ?? 'https://via.placeholder.com/150'),
                     ),
                     Positioned(
-                      bottom: 0,
+                      top: 0,
                       right: 0,
                       child: Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(4),
                         decoration: const BoxDecoration(
-                          color: Color(0xFF00CEA6),
+                          color: Colors.white,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: Color(0xFF00CEA6),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.camera_alt, color: Colors.white, size: 16),
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
+              const SizedBox(height: 48),
+              // Side-by-side names
+              Row(
+                children: [
+                  Expanded(child: _buildUnderlineField('First Name', _firstNameController)),
+                  const SizedBox(width: 24),
+                  Expanded(child: _buildUnderlineField('Last Name', _lastNameController)),
+                ],
+              ),
               const SizedBox(height: 32),
-              _buildTextField('First Name', _firstNameController),
-              const SizedBox(height: 20),
-              _buildTextField('Last Name', _lastNameController),
-              const SizedBox(height: 20),
-              _buildTextField('Bio', _bioController, maxLines: 3),
-              const SizedBox(height: 32),
+              // Password field
               const Text(
-                'Personal Information',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                'Password',
+                style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const TextField(
+                obscureText: true,
+                readOnly: true,
+                decoration: InputDecoration(
+                  hintText: '••••••',
+                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFF00CEA6))),
+                ),
               ),
               const SizedBox(height: 16),
-              _buildInfoRow(Icons.email_outlined, 'Email', 'emily@example.com'),
-              _buildInfoRow(Icons.phone_outlined, 'Phone', '+1 234 567 890'),
-              _buildInfoRow(Icons.cake_outlined, 'Birthday', 'Oct 12, 1995'),
-              _buildInfoRow(Icons.person_outline, 'Gender', 'Female'),
+              TextButton(
+                onPressed: () {},
+                style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: Size.zero),
+                child: const Text(
+                  'Change Password',
+                  style: TextStyle(color: Color(0xFF00CEA6), fontSize: 16),
+                ),
+              ),
             ],
           ),
         ),
@@ -115,70 +169,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, {int maxLines = 1}) {
+  Widget _buildUnderlineField(String label, TextEditingController controller) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: Colors.grey,
-          ),
+          style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 8),
         TextFormField(
           controller: controller,
-          maxLines: maxLines,
-          decoration: InputDecoration(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey[300]!),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey[300]!),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF00CEA6)),
-            ),
+          decoration: const InputDecoration(
+            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+            focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFF00CEA6))),
+            contentPadding: EdgeInsets.symmetric(vertical: 8),
           ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Please enter $label';
-            }
-            return null;
-          },
+          validator: (value) => value == null || value.isEmpty ? 'Required' : null,
         ),
       ],
-    );
-  }
-
-  Widget _buildInfoRow(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: Colors.grey[600]),
-          const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: TextStyle(color: Colors.grey[600], fontSize: 12),
-              ),
-              Text(
-                value,
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-              ),
-            ],
-          ),
-        ],
-      ),
     );
   }
 }

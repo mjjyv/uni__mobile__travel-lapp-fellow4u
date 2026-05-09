@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../provider/profile_provider.dart';
 
 class PhotoGrid extends StatelessWidget {
   const PhotoGrid({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Placeholder data
-    final photos = List.generate(12, (index) => 'https://picsum.photos/seed/${index + 50}/400/400');
+    final profileProvider = context.watch<ProfileProvider>();
+    final photos = profileProvider.profile?.photos ?? [];
+
+    if (photos.isEmpty) {
+      return const Center(child: Text('No photos yet'));
+    }
 
     return GridView.builder(
       padding: const EdgeInsets.all(16),
@@ -20,7 +26,7 @@ class PhotoGrid extends StatelessWidget {
         return ClipRRect(
           borderRadius: BorderRadius.circular(8),
           child: Image.network(
-            photos[index],
+            photos[index].imageUrl,
             fit: BoxFit.cover,
           ),
         );

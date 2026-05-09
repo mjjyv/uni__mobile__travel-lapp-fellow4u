@@ -6,6 +6,7 @@ import '../../../trips/presentation/screens/trips_screen.dart';
 import '../../../chat/presentation/screens/chat_list_screen.dart';
 import '../../../notifications/presentation/screens/notification_screen.dart';
 import '../../../notifications/presentation/provider/notification_provider.dart';
+import '../../../profile/presentation/screens/profile_screen.dart';
 
 
 class MainScreen extends StatefulWidget {
@@ -23,7 +24,7 @@ class _MainScreenState extends State<MainScreen> {
     const TripsScreen(),
     const ChatListScreen(),
     const NotificationScreen(),
-    const Center(child: Text('Profile - Coming Soon')),
+    const ProfileScreen(),
   ];
 
   @override

@@ -19,7 +19,8 @@ CREATE TABLE IF NOT EXISTS user_photos (
     width INT,
     height INT,
     is_public BOOLEAN DEFAULT TRUE,
-    uploaded_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    uploaded_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (user_id, image_url)
 );
 
 -- 3. Bảng User_Journeys (Nhật ký hành trình/Album kỷ niệm)
@@ -32,7 +33,8 @@ CREATE TABLE IF NOT EXISTS user_journeys (
     likes_count INT DEFAULT 0,
     created_date DATE DEFAULT CURRENT_DATE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (user_id, title)
 );
 
 -- 4. Bảng trung gian Journey_Media (Liên kết Ảnh vào Hành trình)

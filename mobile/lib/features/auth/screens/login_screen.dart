@@ -21,8 +21,6 @@ class _LoginScreenState extends State<LoginScreen> {
   void _handleLogin() async {
     if (_formKey.currentState!.validate()) {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      final messenger = ScaffoldMessenger.of(context);
-      final navigator = Navigator.of(context);
 
       await authProvider.login(
         _emailController.text.trim(),
@@ -32,12 +30,12 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
 
       if (authProvider.isAuthenticated) {
-        messenger.showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Login successful!"), backgroundColor: AppTheme.primaryColor),
         );
-        navigator.pushReplacementNamed('/explore');
+        Navigator.of(context).pushReplacementNamed('/explore');
       } else if (authProvider.errorMessage != null) {
-        messenger.showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(authProvider.errorMessage!), backgroundColor: Colors.red),
         );
       }
