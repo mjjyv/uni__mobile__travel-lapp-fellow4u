@@ -18,9 +18,7 @@ migrate_working_dir/
 *.iws
 .idea/
 .vscode/
-*.yaml
-*.yml
-.yml
+
 .env
 
 # The .vscode folder contains launch configuration and tasks you configure in

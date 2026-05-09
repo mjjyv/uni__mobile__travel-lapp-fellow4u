@@ -20,19 +20,19 @@ class TripCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dateFormat = DateFormat('MMM dd, yyyy');
-    final timeFormat = DateFormat('hh:mm a');
+    final timeFormat = DateFormat('HH:mm');
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 24),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.05),
+            spreadRadius: 0,
+            blurRadius: 20,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
@@ -43,140 +43,145 @@ class TripCard extends StatelessWidget {
           Stack(
             children: [
               ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
                 child: Image.network(
                   trip.tour.thumbnailUrl,
-                  height: 150,
+                  height: 180,
                   width: double.infinity,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) => Container(
-                    height: 150,
+                    height: 180,
                     color: Colors.grey[200],
                     child: const Icon(Icons.image, color: Colors.grey),
                   ),
                 ),
               ),
+              // Mark Finished Button
               Positioned(
                 top: 12,
                 left: 12,
-                child: TripStatusBadge(status: trip.status),
-              ),
-              if (trip.status == TripStatus.bidding)
-                Positioned(
-                  bottom: 12,
-                  right: 12,
-                  child: _buildBiddingAvatars(),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.9),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.check, size: 18, color: Colors.black),
+                      SizedBox(width: 4),
+                      Text(
+                        'Mark Finished',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
+              ),
+              // Location Overlay
+              Positioned(
+                bottom: 12,
+                left: 12,
+                child: Row(
+                  children: [
+                    const Icon(Icons.location_on, size: 18, color: Colors.white),
+                    const SizedBox(width: 4),
+                    Text(
+                      trip.tour.locationName,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        shadows: [
+                          Shadow(color: Colors.black45, blurRadius: 4, offset: Offset(0, 1)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
 
           Padding(
             padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Stack(
               children: [
-                Text(
-                  trip.tour.title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Row(
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.calendar_today, size: 14, color: Colors.grey),
-                    const SizedBox(width: 4),
                     Text(
-                      '${dateFormat.format(trip.startDate)} - ${dateFormat.format(trip.endDate)}',
-                      style: const TextStyle(color: Colors.grey, fontSize: 14),
+                      trip.tour.title,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildDetailRow(Icons.calendar_today_outlined, dateFormat.format(trip.startDate)),
+                    const SizedBox(height: 8),
+                    _buildDetailRow(Icons.access_time, '${timeFormat.format(trip.startDate)} - ${timeFormat.format(trip.endDate)}'),
+                    const SizedBox(height: 8),
+                    _buildDetailRow(Icons.person_outline, trip.guide?.name ?? 'No guide assigned'),
+                    const SizedBox(height: 16),
+                    
+                    OutlinedButton.icon(
+                      onPressed: onDetail,
+                      icon: const Icon(Icons.info_outline, size: 18),
+                      label: const Text('Detail'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFF00CEA6),
+                        side: const BorderSide(color: Color(0xFF00CEA6)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    const Icon(Icons.access_time, size: 14, color: Colors.grey),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${timeFormat.format(trip.startDate)} to ${timeFormat.format(trip.endDate)}',
-                      style: const TextStyle(color: Colors.grey, fontSize: 14),
-                    ),
-                  ],
-                ),
-                
-                if (trip.guide != null) ...[
-                  const SizedBox(height: 12),
-                  const Divider(),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 16,
+                // Floating Guide Avatar
+                if (trip.guide != null)
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(3),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: const Color(0xFF00CEA6), width: 2),
+                      ),
+                      child: CircleAvatar(
+                        radius: 32,
                         backgroundImage: NetworkImage(trip.guide!.avatarUrl),
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              trip.guide!.name,
-                              style: const TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              'Local Guide • ${trip.guide!.rating} ⭐',
-                              style: const TextStyle(color: Colors.grey, fontSize: 12),
-                            ),
-                          ],
-                        ),
-                      ),
-                      if (trip.status == TripStatus.unpaid)
-                        ElevatedButton(
-                          onPressed: onPay,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF00CEA6),
-                            minimumSize: const Size(80, 36),
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                          ),
-                          child: const Text('Pay', style: TextStyle(fontSize: 14)),
-                        )
-                      else if (trip.status != TripStatus.completed && trip.status != TripStatus.cancelled)
-                        IconButton(
-                          onPressed: onChat,
-                          icon: const Icon(Icons.chat_bubble_outline, color: Color(0xFF00CEA6)),
-                        ),
-                    ],
+                    ),
                   ),
-                ],
-
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      trip.status == TripStatus.bidding 
-                        ? 'Bidding in progress...' 
-                        : 'Total: \$${trip.totalPrice.toStringAsFixed(2)}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: trip.status == TripStatus.bidding ? Colors.blue : Colors.black87,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: onDetail,
-                      child: const Text(
-                        'Detail',
-                        style: TextStyle(color: Color(0xFF00CEA6), fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
-                ),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildDetailRow(IconData icon, String text) {
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: Colors.grey[600]),
+        const SizedBox(width: 8),
+        Text(
+          text,
+          style: TextStyle(
+            color: Colors.grey[600],
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      ],
     );
   }
 

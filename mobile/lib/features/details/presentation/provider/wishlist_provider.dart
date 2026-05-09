@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import '../../data/services/wishlist_service.dart';
+import '../../../../features/explore/data/models/explore_models.dart';
 
 class WishlistProvider extends ChangeNotifier {
   final WishlistService _service = WishlistService();
   
   Set<int> _tourIds = {};
   Set<int> _expIds = {};
+  List<Tour> _wishlistTours = [];
+  List<Experience> _wishlistExperiences = [];
   bool _isLoading = false;
 
   Set<int> get tourIds => _tourIds;
   Set<int> get expIds => _expIds;
+  List<Tour> get wishlistTours => _wishlistTours;
+  List<Experience> get wishlistExperiences => _wishlistExperiences;
   bool get isLoading => _isLoading;
 
   bool isFavorite(int id, {bool isTour = true}) => 
@@ -19,9 +24,12 @@ class WishlistProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
-      final idMap = await _service.getWishlistIds(token);
-      _tourIds = idMap['tours']?.toSet() ?? {};
-      _expIds = idMap['experiences']?.toSet() ?? {};
+      final itemsMap = await _service.getWishlistItems(token);
+      _wishlistTours = List<Tour>.from(itemsMap['tours'] ?? []);
+      _wishlistExperiences = List<Experience>.from(itemsMap['experiences'] ?? []);
+      
+      _tourIds = _wishlistTours.map((t) => t.id).toSet();
+      _expIds = _wishlistExperiences.map((e) => e.id).toSet();
     } catch (e) {
       debugPrint('Error fetching wishlist: $e');
     }
@@ -50,6 +58,8 @@ class WishlistProvider extends ChangeNotifier {
         tourId: tourId,
         expId: expId,
       );
+      // Refresh to get full objects if added, or remove from local list
+      await fetchWishlist(token);
     } catch (e) {
       // Rollback on failure
       if (targetSet.contains(targetId)) {

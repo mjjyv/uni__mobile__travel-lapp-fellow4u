@@ -1,18 +1,29 @@
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
+// Validation for environment variables
+const dbName = process.env.DB_NAME;
+const dbUser = process.env.DB_USER;
+const dbPass = process.env.DB_PASS;
+const dbHost = process.env.DB_HOST || 'localhost';
+const dbPort = process.env.DB_PORT || 5432;
+
+if (!dbPass) {
+  console.warn('⚠️  Warning: DB_PASS is not defined in environment variables. This may cause connection failures.');
+}
+
 const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASS,
+  dbName,
+  dbUser,
+  dbPass,
   {
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
+    host: dbHost,
+    port: dbPort,
     dialect: 'postgres',
     logging: false,
     define: {
       timestamps: true,
-      underscored: true, // Chuyển đổi camelCase sang snake_case cho DB
+      underscored: true,
     },
   }
 );

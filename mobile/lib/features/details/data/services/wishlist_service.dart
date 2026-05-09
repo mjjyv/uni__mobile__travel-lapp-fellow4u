@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../../../../features/explore/data/models/explore_models.dart';
 
 class WishlistService {
   final String baseUrl = 'http://localhost:3000/api/wishlist';
@@ -44,6 +45,30 @@ class WishlistService {
         if (item['exp_id'] != null) expIds.add(item['exp_id']);
       }
       return {'tours': tourIds, 'experiences': expIds};
+    }
+    return {'tours': [], 'experiences': []};
+  }
+
+  Future<Map<String, List<dynamic>>> getWishlistItems(String token) async {
+    final response = await http.get(
+      Uri.parse(baseUrl),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 200) {
+      final decoded = json.decode(response.body);
+      final List data = decoded['data'];
+      List<Tour> tours = [];
+      List<Experience> experiences = [];
+      for (var item in data) {
+        if (item['Tour'] != null) {
+          tours.add(Tour.fromJson(item['Tour']));
+        }
+        if (item['Experience'] != null) {
+          experiences.add(Experience.fromJson(item['Experience']));
+        }
+      }
+      return {'tours': tours, 'experiences': experiences};
     }
     return {'tours': [], 'experiences': []};
   }

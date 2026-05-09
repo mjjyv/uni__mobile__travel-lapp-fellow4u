@@ -55,7 +55,7 @@ class _GuideDetailScreenState extends State<GuideDetailScreen> {
                     fit: StackFit.expand,
                     children: [
                       Image.network(
-                        guide.coverUrl.isNotEmpty ? guide.coverUrl : 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800',
+                        guide.coverUrl.isNotEmpty ? guide.coverUrl : 'https://www.agoda.com/wp-content/uploads/2024/04/Featured-image-Han-River-at-night-in-Seoul-South-Korea.jpg',
                         fit: BoxFit.cover,
                       ),
                       const DecoratedBox(

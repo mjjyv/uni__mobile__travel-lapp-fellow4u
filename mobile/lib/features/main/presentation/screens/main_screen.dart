@@ -64,8 +64,8 @@ class _MainScreenState extends State<MainScreen> {
               label: 'Explore',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.card_travel_outlined),
-              activeIcon: Icon(Icons.card_travel),
+              icon: Icon(Icons.place_outlined),
+              activeIcon: Icon(Icons.place),
               label: 'My Trips',
             ),
             BottomNavigationBarItem(

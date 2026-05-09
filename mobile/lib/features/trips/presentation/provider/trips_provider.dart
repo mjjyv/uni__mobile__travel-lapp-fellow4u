@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../data/models/trip_models.dart';
-import '../../../../explore/data/models/explore_models.dart';
+import 'package:mobile/features/explore/data/models/explore_models.dart';
 
 class TripsProvider with ChangeNotifier {
   List<Trip> _trips = [];
@@ -40,8 +40,8 @@ class TripsProvider with ChangeNotifier {
           title: 'Dragon Bridge & Night Market',
           price: 25.0,
           durationDays: 1,
-          thumbnail_url: 'https://images.unsplash.com/photo-1559592442-7e18259f63cc?auto=format&fit=crop&w=800&q=80',
-          locationName: 'Da Nang',
+          thumbnailUrl: 'https://ohdidi.vn/uploads/static/NEWS/blog/du%20lich%20da%20nang%20hoi%20an/du_lich_da_nang_hoi_an_2.png',
+          locationName: 'Da Nang, Vietnam',
         ),
         startDate: DateTime.now(),
         endDate: DateTime.now().add(const Duration(hours: 4)),
@@ -66,8 +66,8 @@ class TripsProvider with ChangeNotifier {
           title: 'Hoi An Ancient Town Walk',
           price: 30.0,
           durationDays: 1,
-          thumbnail_url: 'https://images.unsplash.com/photo-1583417319070-4a69db38a482?auto=format&fit=crop&w=800&q=80',
-          locationName: 'Hoi An',
+          thumbnailUrl: 'https://www.agoda.com/wp-content/uploads/2024/04/Featured-image-Han-River-at-night-in-Seoul-South-Korea.jpg',
+          locationName: 'Hoi An, Vietnam',
         ),
         startDate: DateTime.now().add(const Duration(days: 2)),
         endDate: DateTime.now().add(const Duration(days: 2, hours: 3)),
@@ -84,8 +84,8 @@ class TripsProvider with ChangeNotifier {
           title: 'Custom Hue City Tour',
           price: 0.0,
           durationDays: 1,
-          thumbnail_url: 'https://images.unsplash.com/photo-1599708153386-62e269290076?auto=format&fit=crop&w=800&q=80',
-          locationName: 'Hue',
+          thumbnailUrl: 'https://image.vietnam.travel/sites/default/files/styles/top_banner/public/2022-12/shutterstock_1939037803_0.jpg',
+          locationName: 'Hue, Vietnam',
         ),
         startDate: DateTime.now().add(const Duration(days: 5)),
         endDate: DateTime.now().add(const Duration(days: 5, hours: 8)),
@@ -124,7 +124,7 @@ class TripsProvider with ChangeNotifier {
           title: 'Saigon Street Food Tour',
           price: 20.0,
           durationDays: 1,
-          thumbnail_url: 'https://images.unsplash.com/photo-1528330959610-fe93b37d0ef4?auto=format&fit=crop&w=800&q=80',
+          thumbnailUrl: 'https://hoangphuan.com/wp-content/uploads/2024/06/tour-du-lich-da-nang-1.jpg',
           locationName: 'Ho Chi Minh City',
         ),
         startDate: DateTime.now().subtract(const Duration(days: 10)),

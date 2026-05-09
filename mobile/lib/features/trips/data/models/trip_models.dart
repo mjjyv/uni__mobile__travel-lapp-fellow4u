@@ -1,4 +1,4 @@
-import '../../../../explore/data/models/explore_models.dart';
+import 'package:mobile/features/explore/data/models/explore_models.dart';
 
 enum TripStatus {
   waiting,

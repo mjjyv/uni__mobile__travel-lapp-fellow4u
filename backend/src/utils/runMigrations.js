@@ -6,7 +6,7 @@ const { sequelize } = require('../models');
  * Script to run all SQL migrations in order from the database/ directory.
  */
 const runMigrations = async () => {
-  const dbDir = path.join(__dirname, '../../../database');
+  const dbDir = path.join(__dirname, '../../../docker/database');
   const files = fs.readdirSync(dbDir)
     .filter(file => file.endsWith('.sql'))
     .sort(); // Ensure order V1, V2, ...
