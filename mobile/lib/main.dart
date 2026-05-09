@@ -15,6 +15,7 @@ import 'features/categories/presentation/provider/category_provider.dart';
 import 'features/details/presentation/provider/wishlist_provider.dart';
 import 'features/trips/presentation/provider/trips_provider.dart';
 import 'features/chat/presentation/provider/chat_provider.dart';
+import 'features/notifications/presentation/provider/notification_provider.dart';
 
 
 void main() {
@@ -29,6 +30,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => WishlistProvider()),
         ChangeNotifierProvider(create: (_) => TripsProvider()),
         ChangeNotifierProvider(create: (_) => ChatProvider()),
+        ChangeNotifierProvider(create: (_) => NotificationProvider()),
       ],
       child: const Fellow4UApp(),
     ),

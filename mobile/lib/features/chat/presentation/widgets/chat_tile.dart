@@ -33,7 +33,7 @@ class ChatTile extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        room.otherParticipant.name,
+                        '${room.otherParticipant.name} ${room.bookingId != null ? "(Booking #${room.bookingId})" : ""}',
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 17,

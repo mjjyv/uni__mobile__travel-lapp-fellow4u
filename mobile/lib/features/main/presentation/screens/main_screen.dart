@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../auth/providers/auth_provider.dart';
 import '../../../explore/presentation/screens/explore_screen.dart';
 import '../../../trips/presentation/screens/trips_screen.dart';
 import '../../../chat/presentation/screens/chat_list_screen.dart';
+import '../../../notifications/presentation/screens/notification_screen.dart';
+import '../../../notifications/presentation/provider/notification_provider.dart';
 
 
 class MainScreen extends StatefulWidget {
@@ -17,11 +21,22 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _screens = [
     const ExploreScreen(),
     const TripsScreen(),
-
     const ChatListScreen(),
-    const Center(child: Text('Notifications - Coming Soon')),
+    const NotificationScreen(),
     const Center(child: Text('Profile - Coming Soon')),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final auth = context.read<AuthProvider>();
+      if (auth.token != null) {
+        // Start polling for notifications globally
+        context.read<NotificationProvider>().startPolling(auth.token!);
+      }
+    });
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -58,28 +73,28 @@ class _MainScreenState extends State<MainScreen> {
           showSelectedLabels: true,
           showUnselectedLabels: false,
           elevation: 0,
-          items: const [
-            BottomNavigationBarItem(
+          items: [
+            const BottomNavigationBarItem(
               icon: Icon(Icons.explore_outlined),
               activeIcon: Icon(Icons.explore),
               label: 'Explore',
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Icons.place_outlined),
               activeIcon: Icon(Icons.place),
               label: 'My Trips',
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Icons.chat_bubble_outline),
               activeIcon: Icon(Icons.chat_bubble),
               label: 'Chat',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.notifications_outlined),
-              activeIcon: Icon(Icons.notifications),
+              icon: _buildNotificationIcon(Icons.notifications_outlined),
+              activeIcon: _buildNotificationIcon(Icons.notifications),
               label: 'Notification',
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Icons.person_outline),
               activeIcon: Icon(Icons.person),
               label: 'Profile',
@@ -87,6 +102,43 @@ class _MainScreenState extends State<MainScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildNotificationIcon(IconData icon) {
+    return Consumer<NotificationProvider>(
+      builder: (context, provider, child) {
+        return Stack(
+          children: [
+            Icon(icon),
+            if (provider.unreadCount > 0)
+              Positioned(
+                right: 0,
+                top: 0,
+                child: Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  constraints: const BoxConstraints(
+                    minWidth: 16,
+                    minHeight: 16,
+                  ),
+                  child: Text(
+                    provider.unreadCount > 9 ? '9+' : provider.unreadCount.toString(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 }

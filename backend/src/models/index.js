@@ -29,6 +29,15 @@ const BookingBid = require('./BookingBid');
 const BookingStatusHistory = require('./BookingStatusHistory');
 const ChatRoom = require('./ChatRoom');
 const Message = require('./Message');
+const Notification = require('./Notification')(sequelize);
+const NotificationTemplate = require('./NotificationTemplate')(sequelize);
+
+// Module 12 Models
+const SecurityLog = require('./SecurityLog');
+const UserPhoto = require('./UserPhoto');
+const UserJourney = require('./UserJourney');
+const JourneyMedia = require('./JourneyMedia');
+const UserSetting = require('./UserSetting');
 
 
 // Associations - Module 1
@@ -165,6 +174,35 @@ Message.belongsTo(ChatRoom, { foreignKey: 'room_id' });
 Message.belongsTo(User, { foreignKey: 'sender_id', as: 'Sender' });
 User.hasMany(Message, { foreignKey: 'sender_id' });
 
+// Associations - Module 11 (Notification Center)
+User.hasMany(Notification, { foreignKey: 'user_id', as: 'Notifications' });
+Notification.belongsTo(User, { foreignKey: 'user_id' });
+
+// Associations - Module 12 (Profile & Personal Media)
+User.hasMany(UserPhoto, { foreignKey: 'user_id', as: 'Photos' });
+UserPhoto.belongsTo(User, { foreignKey: 'user_id' });
+
+User.hasMany(UserJourney, { foreignKey: 'user_id', as: 'Journeys' });
+UserJourney.belongsTo(User, { foreignKey: 'user_id' });
+
+User.hasOne(UserSetting, { foreignKey: 'user_id', as: 'Settings' });
+UserSetting.belongsTo(User, { foreignKey: 'user_id' });
+
+User.hasMany(SecurityLog, { foreignKey: 'user_id', as: 'SecurityLogs' });
+SecurityLog.belongsTo(User, { foreignKey: 'user_id' });
+
+UserJourney.belongsToMany(UserPhoto, { 
+  through: JourneyMedia, 
+  foreignKey: 'journey_id', 
+  otherKey: 'photo_id',
+  as: 'Media'
+});
+UserPhoto.belongsToMany(UserJourney, { 
+  through: JourneyMedia, 
+  foreignKey: 'photo_id', 
+  otherKey: 'journey_id' 
+});
+
 
 module.exports = {
   sequelize,
@@ -197,6 +235,12 @@ module.exports = {
   BookingBid,
   BookingStatusHistory,
   ChatRoom,
-  Message
+  Message,
+  Notification,
+  NotificationTemplate,
+  UserPhoto,
+  UserJourney,
+  UserSetting,
+  SecurityLog,
+  JourneyMedia
 };
-

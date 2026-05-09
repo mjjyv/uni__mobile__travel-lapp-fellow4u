@@ -43,10 +43,16 @@ class ChatProvider with ChangeNotifier {
       final data = await _chatService.fetchMessages(roomId, token);
       final newMessages = data.map((json) => ChatMessage.fromJson(json)).toList();
       
-      // Merge and deduplicate
       bool hasChanges = false;
       for (var msg in newMessages) {
-        if (!_messages.any((m) => m.id == msg.id)) {
+        // Fingerprint: sender + content + timestamp (rounded to minute to catch SEED duplicates)
+        final timeKey = msg.createdAt.millisecondsSinceEpoch ~/ 60000;
+        final fingerprint = '${msg.senderId}_${msg.content}_$timeKey';
+        
+        if (!_messages.any((m) {
+          final mTimeKey = m.createdAt.millisecondsSinceEpoch ~/ 60000;
+          return '${m.senderId}_${m.content}_$mTimeKey' == fingerprint;
+        })) {
           _messages.add(msg);
           hasChanges = true;
         }
@@ -69,7 +75,15 @@ class ChatProvider with ChangeNotifier {
     
     try {
       final data = await _chatService.fetchChatRooms(token);
-      _rooms = data.map((json) => ChatRoom.fromJson(json)).toList();
+      final List<ChatRoom> fetchedRooms = data.map((json) => ChatRoom.fromJson(json)).toList();
+      
+      // Safety Deduplication (By room.id)
+      final Map<int, ChatRoom> uniqueRooms = {};
+      for (var room in fetchedRooms) {
+        uniqueRooms[room.id] = room;
+      }
+      _rooms = uniqueRooms.values.toList();
+      _rooms.sort((a, b) => b.lastMessageAt.compareTo(a.lastMessageAt));
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -85,7 +99,17 @@ class ChatProvider with ChangeNotifier {
     
     try {
       final data = await _chatService.fetchMessages(roomId, token);
-      _messages = data.map((json) => ChatMessage.fromJson(json)).toList();
+      final List<ChatMessage> fetchedMessages = data.map((json) => ChatMessage.fromJson(json)).toList();
+
+      // Deduplicate by content fingerprint (1-minute window)
+      final Map<String, ChatMessage> uniqueMessages = {};
+      for (var msg in fetchedMessages) {
+        final timeKey = msg.createdAt.millisecondsSinceEpoch ~/ 60000;
+        final fingerprint = '${msg.senderId}_${msg.content}_$timeKey';
+        uniqueMessages[fingerprint] = msg;
+      }
+      
+      _messages = uniqueMessages.values.toList();
       _messages.sort((a, b) => a.createdAt.compareTo(b.createdAt));
       
       await _chatService.markAsRead(roomId, token);

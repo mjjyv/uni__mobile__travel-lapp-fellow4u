@@ -121,7 +121,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  room.otherParticipant.name,
+                  '${room.otherParticipant.name} ${room.bookingId != null ? "(Booking #${room.bookingId})" : ""}',
                   style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
                   overflow: TextOverflow.ellipsis,
                 ),

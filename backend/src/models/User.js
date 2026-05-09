@@ -40,6 +40,22 @@ const User = sequelize.define('User', {
     type: DataTypes.TEXT,
     allowNull: true,
   },
+  bio: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  cover_url: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  date_of_birth: {
+    type: DataTypes.DATEONLY,
+    allowNull: true,
+  },
+  gender: {
+    type: DataTypes.STRING(20),
+    allowNull: true,
+  },
   is_active: {
     type: DataTypes.BOOLEAN,
     defaultValue: true,

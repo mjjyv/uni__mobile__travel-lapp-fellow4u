@@ -76,9 +76,6 @@ WHERE traveler_id = (SELECT user_id FROM users WHERE email = 'minh.tran@example.
 AND status = 'unpaid';
 
 -- 6. Mô phỏng Booking đã hoàn thành (Completed)
--- Để có dữ liệu cho phần Review (nếu cần test lại flow review tự động)
--- Cập nhật booking của Emily thành 'completed' nếu ngày kết thúc đã qua (giả lập)
--- Hoặc tạo một booking mới trong quá khứ
 INSERT INTO bookings (traveler_id, guide_id, tour_id, start_date, end_date, status, total_price, meeting_point)
 SELECT 
     (SELECT user_id FROM users WHERE email = 'minh.tran@example.com'),
@@ -91,7 +88,21 @@ SELECT
     'Ben Thanh Market'
 ON CONFLICT DO NOTHING;
 
--- 7. Reset Sequences
+-- 7. Mô phỏng Booking Đang diễn ra (Ongoing - Current Trip)
+-- Emily đang tham gia tour "Da Nang - Hoi An" ngay hôm nay
+INSERT INTO bookings (traveler_id, guide_id, tour_id, start_date, end_date, status, total_price, meeting_point)
+SELECT 
+    (SELECT user_id FROM users WHERE email = 'emily@example.com'),
+    (SELECT user_id FROM users WHERE email = 'anh.nguyen@fellow4u.com'),
+    (SELECT tour_id FROM tours WHERE title = 'Da Nang - Hoi An 3 Days Adventure'),
+    CURRENT_DATE - INTERVAL '1 day',
+    CURRENT_DATE + INTERVAL '1 day',
+    'ongoing',
+    150.00,
+    'Dragon Bridge'
+ON CONFLICT DO NOTHING;
+
+-- 8. Reset Sequences
 SELECT setval('bookings_booking_id_seq', (SELECT MAX(booking_id) FROM bookings));
 SELECT setval('booking_bids_bid_id_seq', (SELECT MAX(bid_id) FROM booking_bids));
 SELECT setval('booking_status_history_history_id_seq', (SELECT MAX(history_id) FROM booking_status_history));

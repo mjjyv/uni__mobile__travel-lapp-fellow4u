@@ -1,71 +1,141 @@
 -- =============================================================================
--- Dự án: Fellow4U
--- Module: 11 - Trung tâm Thông báo
--- Mô tả: Quản lý thông báo đẩy (Push), thông báo trong ứng dụng và mẫu nội dung.
+-- MODULE 11: Notification Center Schema
 -- =============================================================================
 
--- 1. Khởi tạo kiểu dữ liệu cho loại thông báo
-DO $$
+-- 1. Định nghĩa kiểu ENUM cho phân loại thông báo
+DO $$ 
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'notification_category') THEN
         CREATE TYPE notification_category AS ENUM (
-            'booking_update',   -- Cập nhật trạng thái tour
-            'payment_status',   -- Xác nhận thanh toán
-            'chat_arrival',     -- Có tin nhắn mới
-            'review_reminder',  -- Nhắc nhở để lại đánh giá
-            'system_alert',     -- Thông báo từ quản trị viên
-            'promotion'         -- Khuyến mãi/Tin tức
+            'booking_update',
+            'chat_arrival',
+            'payment_status',
+            'review_reminder',
+            'promotion',
+            'system_alert'
         );
     END IF;
 END $$;
 
--- 2. Bảng Notification_Templates (Quản lý mẫu nội dung)
--- Giúp chuẩn hóa thông điệp và hỗ trợ đa ngôn ngữ dễ dàng
+-- 2. Bảng mẫu thông báo (Templates) - Để quản lý nội dung linh hoạt
 CREATE TABLE IF NOT EXISTS notification_templates (
     template_id SERIAL PRIMARY KEY,
     category notification_category NOT NULL,
-    template_key VARCHAR(50) UNIQUE NOT NULL, -- Ví dụ: 'BOOKING_ACCEPTED_TEMPLATE'
-    title_pattern TEXT NOT NULL,  -- Ví dụ:"Chuyến đi đã sẵn sàng!"
-    body_pattern TEXT NOT NULL,   -- Ví dụ: "{guide_name} đã chấp nhận yêu cầu của bạn tại {location}."
+    template_key VARCHAR(100) UNIQUE NOT NULL, -- Ví dụ: 'BOOKING_ACCEPTED'
+    title_pattern TEXT NOT NULL, -- Ví dụ: 'Yêu cầu được chấp nhận'
+    body_pattern TEXT NOT NULL,  -- Ví dụ: 'Guide {guide_name} đã đồng ý...'
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 3. Bảng Notifications (Lưu trữ thông báo cá nhân)
+-- 3. Bảng chính lưu trữ thông báo
 CREATE TABLE IF NOT EXISTS notifications (
     notif_id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
     category notification_category NOT NULL,
-    title VARCHAR(255) NOT NULL,
+    title TEXT NOT NULL,
     message TEXT NOT NULL,
-
-    -- Dữ liệu hỗ trợ Deep-linking (Nhấn vào thông báo mở đúng màn hình)
-    related_entity_type VARCHAR(50), -- 'booking', 'review', 'chat', 'news'
-    related_entity_id INT,           -- ID của booking_id, news_id,...
-
-    -- Trạng thái
+    
+    -- Deep-linking support
+    related_entity_type VARCHAR(50), -- 'booking', 'chat', 'payment', 'news'
+    related_entity_id INTEGER,
+    
     is_read BOOLEAN DEFAULT FALSE,
     read_at TIMESTAMP WITH TIME ZONE,
-
-    -- Lưu trữ thêm dữ liệu linh hoạt (ví dụ: avatar người gửi, link ảnh)
-    extra_data JSONB, 
-
+    
+    -- Dữ liệu bổ sung (JSON)
+    extra_data JSONB,
+    
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 4. Tối ưu hóa truy vấn cho Notification Center
--- Truy vấn nhanh thông báo chưa đọc của 1 User
-CREATE INDEX IF NOT EXISTS idx_notifications_unread ON notifications(user_id, is_read) WHERE is_read IS FALSE;
--- Sắp xếp thông báo theo thời gian mới nhất
-CREATE INDEX IF NOT EXISTS idx_notifications_created ON notifications(user_id, created_at DESC);
+-- 4. Chỉ mục (Indexes) để tối ưu truy vấn
+CREATE INDEX IF NOT EXISTS idx_notifications_user_unread ON notifications(user_id) WHERE is_read = FALSE;
+CREATE INDEX IF NOT EXISTS idx_notifications_created_at ON notifications(created_at DESC);
 
--- 5. Function/Trigger hỗ trợ tự động dọn dẹp (Optional)
--- Xóa các thông báo cũ hơn 90 ngày để giảm tải database
-CREATE OR REPLACE PROCEDURE clean_old_notifications()
-LANGUAGE plpgsql
-AS $$
+-- 5. Tự động hóa bằng Trigger (Automated Triggers)
+
+-- A. Trigger thông báo khi cập nhật trạng thái Booking
+CREATE OR REPLACE FUNCTION func_notify_booking_update()
+RETURNS TRIGGER AS $$
 BEGIN
-    DELETE FROM notifications WHERE created_at < NOW() - INTERVAL '90 days';
+    -- Chỉ tạo thông báo khi có sự thay đổi trạng thái
+    IF (OLD.status IS NULL OR OLD.status <> NEW.status) THEN
+        
+        -- Kiểm tra tránh trùng lặp thông báo trong 1 phút qua
+        IF NOT EXISTS (
+            SELECT 1 FROM notifications 
+            WHERE user_id = NEW.traveler_id 
+            AND category = 'booking_update' 
+            AND related_entity_id = NEW.booking_id
+            AND message LIKE '%' || NEW.status || '%'
+            AND created_at > CURRENT_TIMESTAMP - INTERVAL '1 minute'
+        ) THEN
+            INSERT INTO notifications (user_id, category, title, message, related_entity_type, related_entity_id)
+            VALUES (
+                NEW.traveler_id,
+                'booking_update',
+                'Cập nhật chuyến đi',
+                'Đơn đặt chỗ #' || NEW.booking_id || ' của bạn đã chuyển sang trạng thái: ' || NEW.status,
+                'booking',
+                NEW.booking_id
+            );
+        END IF;
+    END IF;
+    RETURN NEW;
 END;
-$$;
+$$ LANGUAGE plpgsql;
 
--- LƯU Ý: Dữ liệu mẫu (Notification Templates) đã được chuyển sang file Seed riêng.
+DROP TRIGGER IF EXISTS trg_notify_booking_update ON bookings;
+CREATE TRIGGER trg_notify_booking_update
+AFTER UPDATE ON bookings
+FOR EACH ROW
+EXECUTE FUNCTION func_notify_booking_update();
+
+-- B. Trigger thông báo khi có tin nhắn mới
+CREATE OR REPLACE FUNCTION func_notify_new_message()
+RETURNS TRIGGER AS $$
+DECLARE
+    recipient_id INTEGER;
+    room_record RECORD;
+BEGIN
+    -- Tìm người nhận tin nhắn (người còn lại trong phòng chat)
+    SELECT * INTO room_record FROM chat_rooms WHERE room_id = NEW.room_id;
+    
+    IF room_record IS NULL THEN
+        RETURN NEW;
+    END IF;
+
+    IF NEW.sender_id = room_record.participant_one_id THEN
+        recipient_id := room_record.participant_two_id;
+    ELSE
+        recipient_id := room_record.participant_one_id;
+    END IF;
+
+    -- Kiểm tra tránh trùng lặp thông báo tin nhắn trong 1 phút qua cho cùng một phòng
+    IF NOT EXISTS (
+        SELECT 1 FROM notifications 
+        WHERE user_id = recipient_id 
+        AND category = 'chat_arrival' 
+        AND related_entity_id = NEW.room_id
+        AND created_at > CURRENT_TIMESTAMP - INTERVAL '1 minute'
+    ) THEN
+        INSERT INTO notifications (user_id, category, title, message, related_entity_type, related_entity_id)
+        VALUES (
+            recipient_id,
+            'chat_arrival',
+            'Tin nhắn mới',
+            'Bạn có tin nhắn mới từ ' || (SELECT COALESCE(first_name || ' ' || last_name, 'ai đó') FROM users WHERE user_id = NEW.sender_id),
+            'chat',
+            NEW.room_id
+        );
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_notify_new_message ON messages;
+CREATE TRIGGER trg_notify_new_message
+AFTER INSERT ON messages
+FOR EACH ROW
+EXECUTE FUNCTION func_notify_new_message();
