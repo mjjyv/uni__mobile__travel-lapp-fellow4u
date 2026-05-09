@@ -1,6 +1,4 @@
 # Docker Compose file for Fellow4U application
-version: '3.8'
-
 services:
   # Database Service
   db:
