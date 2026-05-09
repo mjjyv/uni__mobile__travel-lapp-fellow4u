@@ -37,6 +37,3 @@ Mỗi module sẽ đi qua đúng 3 bước nghiêm ngặt này để đảm bả
 * **End-to-End Logic:** Đồng bộ hóa logic giữa Client và Server (ví dụ: nhấn thanh toán trên App thì Backend trừ tiền và gửi phản hồi xác nhận ngay lập tức).
 * **Error Handling:** Xử lý các kịch bản phản hồi từ API (loading, thông báo lỗi, xử lý khi mất kết nối mạng) để hoàn thiện module.
 
----
-
-Việc chia tách rõ ràng thế này giúp bạn kiểm soát được "đầu ra" của từng module trước khi nhảy sang cái tiếp theo.

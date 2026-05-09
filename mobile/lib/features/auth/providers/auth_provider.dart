@@ -9,10 +9,12 @@ class AuthProvider extends ChangeNotifier {
   
   bool _isLoading = false;
   String? _token;
+  int? _userId;
   String? _errorMessage;
 
   bool get isLoading => _isLoading;
   String? get token => _token;
+  int? get userId => _userId;
   String? get errorMessage => _errorMessage;
   bool get isAuthenticated => _token != null;
 
@@ -22,7 +24,11 @@ class AuthProvider extends ChangeNotifier {
     try {
       final response = await _authService.login(email, password);
       _token = response.data['token'];
+      _userId = response.data['user']['user_id'];
+      
       await _storage.write(key: 'jwt_token', value: _token);
+      await _storage.write(key: 'user_id', value: _userId.toString());
+      
       notifyListeners();
     } on DioException catch (e) {
       if (e.type == DioExceptionType.connectionTimeout || 
@@ -56,7 +62,6 @@ class AuthProvider extends ChangeNotifier {
         password: password,
         roleType: roleType,
       );
-      // Optional: Auto login after register or navigate to login
     } on DioException catch (e) {
       if (e.type == DioExceptionType.connectionTimeout || 
           e.type == DioExceptionType.receiveTimeout ||
@@ -74,12 +79,18 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> tryAutoLogin() async {
     _token = await _storage.read(key: 'jwt_token');
+    final userIdStr = await _storage.read(key: 'user_id');
+    if (userIdStr != null) {
+      _userId = int.tryParse(userIdStr);
+    }
     notifyListeners();
   }
 
   Future<void> logout() async {
     _token = null;
+    _userId = null;
     await _storage.delete(key: 'jwt_token');
+    await _storage.delete(key: 'user_id');
     notifyListeners();
   }
 

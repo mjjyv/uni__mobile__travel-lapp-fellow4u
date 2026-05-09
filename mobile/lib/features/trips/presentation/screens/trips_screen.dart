@@ -6,9 +6,26 @@ import 'package:mobile/features/trips/data/models/trip_models.dart';
 import 'package:mobile/features/details/presentation/provider/wishlist_provider.dart';
 import 'package:mobile/features/explore/presentation/widgets/tour_card.dart';
 import 'package:mobile/features/auth/providers/auth_provider.dart';
+import 'package:mobile/features/trips/presentation/screens/trip_detail_screen.dart';
 
-class TripsScreen extends StatelessWidget {
+class TripsScreen extends StatefulWidget {
   const TripsScreen({super.key});
+
+  @override
+  State<TripsScreen> createState() => _TripsScreenState();
+}
+
+class _TripsScreenState extends State<TripsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final auth = context.read<AuthProvider>();
+      if (auth.token != null) {
+        context.read<TripsProvider>().fetchTrips(auth.token!);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -171,7 +188,23 @@ class TripTabContent extends StatelessWidget {
             return TripCard(
               trip: trip,
               onChat: () => _showComingSoon(context, 'Chat'),
-              onDetail: () => _showComingSoon(context, 'Detail View'),
+              onDetail: () {
+                final auth = context.read<AuthProvider>();
+                final tripsProvider = context.read<TripsProvider>();
+                final token = auth.token;
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TripDetailScreen(tripId: trip.id),
+                  ),
+                ).then((_) {
+                  // Refresh trips when returning from detail screen
+                  if (token != null) {
+                    tripsProvider.fetchTrips(token);
+                  }
+                });
+              },
               onPay: () => _showComingSoon(context, 'Payment Checkout'),
             );
           },

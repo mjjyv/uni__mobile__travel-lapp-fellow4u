@@ -16,4 +16,12 @@ class ApiClient {
   );
 
   static Dio get dio => _dio;
+
+  static Options getOptionsWithToken(String token) {
+    return Options(
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+  }
 }

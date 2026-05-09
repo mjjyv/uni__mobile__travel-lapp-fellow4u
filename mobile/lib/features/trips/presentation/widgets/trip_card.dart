@@ -42,17 +42,20 @@ class TripCard extends StatelessWidget {
           // Image and Status
           Stack(
             children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                child: Image.network(
-                  trip.tour.thumbnailUrl,
+              Hero(
+                tag: 'trip_image_${trip.id}',
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                  child: Image.network(
+                  trip.tour?.thumbnailUrl ?? 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=2070&auto=format&fit=crop',
                   height: 180,
                   width: double.infinity,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) => Container(
-                    height: 180,
-                    color: Colors.grey[200],
-                    child: const Icon(Icons.image, color: Colors.grey),
+                      height: 180,
+                      color: Colors.grey[200],
+                      child: const Icon(Icons.image, color: Colors.grey),
+                    ),
                   ),
                 ),
               ),
@@ -91,7 +94,7 @@ class TripCard extends StatelessWidget {
                     const Icon(Icons.location_on, size: 18, color: Colors.white),
                     const SizedBox(width: 4),
                     Text(
-                      trip.tour.locationName,
+                      trip.tour?.locationName ?? 'Custom Location',
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -115,7 +118,7 @@ class TripCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      trip.tour.title,
+                      trip.tour?.title ?? 'Custom Trip Request',
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,

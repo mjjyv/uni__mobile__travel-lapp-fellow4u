@@ -27,6 +27,8 @@ const CollectionTour = require('./CollectionTour');
 const Booking = require('./Booking');
 const BookingBid = require('./BookingBid');
 const BookingStatusHistory = require('./BookingStatusHistory');
+const ChatRoom = require('./ChatRoom');
+const Message = require('./Message');
 
 
 // Associations - Module 1
@@ -150,6 +152,19 @@ GuideProfile.hasMany(BookingBid, { foreignKey: 'guide_id' });
 Booking.hasMany(BookingStatusHistory, { foreignKey: 'booking_id', as: 'StatusHistory' });
 BookingStatusHistory.belongsTo(Booking, { foreignKey: 'booking_id' });
 
+// Associations - Module 10 (Messaging System)
+ChatRoom.belongsTo(Booking, { foreignKey: 'booking_id' });
+Booking.hasOne(ChatRoom, { foreignKey: 'booking_id' });
+
+ChatRoom.belongsTo(User, { foreignKey: 'participant_one_id', as: 'ParticipantOne' });
+ChatRoom.belongsTo(User, { foreignKey: 'participant_two_id', as: 'ParticipantTwo' });
+
+ChatRoom.hasMany(Message, { foreignKey: 'room_id', as: 'Messages' });
+Message.belongsTo(ChatRoom, { foreignKey: 'room_id' });
+
+Message.belongsTo(User, { foreignKey: 'sender_id', as: 'Sender' });
+User.hasMany(Message, { foreignKey: 'sender_id' });
+
 
 module.exports = {
   sequelize,
@@ -180,6 +195,8 @@ module.exports = {
   CollectionTour,
   Booking,
   BookingBid,
-  BookingStatusHistory
+  BookingStatusHistory,
+  ChatRoom,
+  Message
 };
 

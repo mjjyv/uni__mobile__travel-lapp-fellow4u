@@ -24,7 +24,7 @@ app.use('/api/search', require('./src/routes/searchRoutes'));
 app.use('/api/categories', require('./src/routes/categoryRoutes'));
 app.use('/api/wishlist', require('./src/routes/wishlistRoutes'));
 app.use('/api/bookings', require('./src/routes/bookingRoutes'));
-
+app.use('/api/chats', require('./src/routes/chatRoutes'));
 
 // Database Connection & Server Start
 const startServer = async () => {
@@ -32,9 +32,6 @@ const startServer = async () => {
     await sequelize.authenticate();
     console.log('✅ Connection to PostgreSQL has been established successfully.');
     
-    // Sync models (Optional: be careful in production)
-    // await sequelize.sync(); 
-
     app.listen(PORT, () => {
       console.log(`🚀 Server is running on http://localhost:${PORT}`);
     });

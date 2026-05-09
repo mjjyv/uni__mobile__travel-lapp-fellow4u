@@ -40,11 +40,39 @@ class BookingBid {
   }
 }
 
+class BookingStatusHistory {
+  final int id;
+  final TripStatus? fromStatus;
+  final TripStatus toStatus;
+  final String? reason;
+  final DateTime changedAt;
+
+  BookingStatusHistory({
+    required this.id,
+    this.fromStatus,
+    required this.toStatus,
+    this.reason,
+    required this.changedAt,
+  });
+
+  factory BookingStatusHistory.fromJson(Map<String, dynamic> json) {
+    return BookingStatusHistory(
+      id: json['history_id'],
+      fromStatus: json['from_status'] != null
+          ? TripStatus.values.firstWhere((e) => e.name.toLowerCase() == json['from_status'].toString().toLowerCase())
+          : null,
+      toStatus: TripStatus.values.firstWhere((e) => e.name.toLowerCase() == json['to_status'].toString().toLowerCase()),
+      reason: json['reason'],
+      changedAt: DateTime.parse(json['changed_at']),
+    );
+  }
+}
+
 class Trip {
   final int id;
   final int travelerId;
   final Guide? guide;
-  final Tour tour;
+  final Tour? tour;
   final DateTime startDate;
   final DateTime endDate;
   final TripStatus status;
@@ -53,12 +81,13 @@ class Trip {
   final String? meetingPoint;
   final String? specialRequests;
   final List<BookingBid> bids;
+  final List<BookingStatusHistory> statusHistory;
 
   Trip({
     required this.id,
     required this.travelerId,
     this.guide,
-    required this.tour,
+    this.tour,
     required this.startDate,
     required this.endDate,
     required this.status,
@@ -67,6 +96,7 @@ class Trip {
     this.meetingPoint,
     this.specialRequests,
     this.bids = const [],
+    this.statusHistory = const [],
   });
 
   factory Trip.fromJson(Map<String, dynamic> json) {
@@ -74,19 +104,23 @@ class Trip {
       id: json['booking_id'],
       travelerId: json['traveler_id'],
       guide: json['Guide'] != null ? Guide.fromJson(json['Guide']) : null,
-      tour: Tour.fromJson(json['Tour']),
+      tour: json['Tour'] != null ? Tour.fromJson(json['Tour']) : null,
       startDate: DateTime.parse(json['start_date']),
       endDate: DateTime.parse(json['end_date']),
       status: TripStatus.values.firstWhere(
-        (e) => e.name == json['status'],
+        (e) => e.name.toLowerCase() == json['status'].toString().toLowerCase(),
         orElse: () => TripStatus.waiting,
       ),
-      totalPrice: double.parse(json['total_price'].toString()),
-      depositAmount: double.parse(json['deposit_amount'].toString()),
+      totalPrice: double.parse(json['total_price']?.toString() ?? '0.0'),
+      depositAmount: double.parse(json['deposit_amount']?.toString() ?? '0.0'),
       meetingPoint: json['meeting_point'],
       specialRequests: json['special_requests'],
       bids: (json['Bids'] as List?)
               ?.map((i) => BookingBid.fromJson(i))
+              .toList() ??
+          [],
+      statusHistory: (json['StatusHistory'] as List?)
+              ?.map((i) => BookingStatusHistory.fromJson(i))
               .toList() ??
           [],
     );

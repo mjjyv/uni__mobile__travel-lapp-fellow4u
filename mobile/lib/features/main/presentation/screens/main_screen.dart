@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../explore/presentation/screens/explore_screen.dart';
 import '../../../trips/presentation/screens/trips_screen.dart';
+import '../../../chat/presentation/screens/chat_list_screen.dart';
 
 
 class MainScreen extends StatefulWidget {
@@ -17,7 +18,7 @@ class _MainScreenState extends State<MainScreen> {
     const ExploreScreen(),
     const TripsScreen(),
 
-    const Center(child: Text('Chats - Coming Soon')),
+    const ChatListScreen(),
     const Center(child: Text('Notifications - Coming Soon')),
     const Center(child: Text('Profile - Coming Soon')),
   ];

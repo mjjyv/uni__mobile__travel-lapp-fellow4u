@@ -24,7 +24,7 @@ SELECT DISTINCT
     150.00,
     3,
     TRUE,
-    'https://ohdidi.vn/uploads/static/NEWS/blog/du%20lich%20da%20nang%20hoi%20an/du_lich_da_nang_hoi_an_2.png',
+    'https://truongsatour.com/uploads/images/%5BDownloader_la%5D-6593cb5ce65c7.jpg',
     p.provider_id,
     'Da Nang International Airport (Terminal 1)'
 FROM locations l, tour_providers p
@@ -40,7 +40,7 @@ SELECT
     299.00,
     5,
     TRUE,
-    'https://www.agoda.com/wp-content/uploads/2024/04/Featured-image-Han-River-at-night-in-Seoul-South-Korea.jpg'
+    'https://skyticket.com/guide/wp-content/uploads/2017/12/iStock-502607495-e1534733959975.jpg'
 FROM locations l
 WHERE l.city_name = 'Seoul'
 ON CONFLICT (title) DO NOTHING;
@@ -65,7 +65,7 @@ SELECT DISTINCT t.tour_id, img.url, img.ord, img.cap
 FROM tours t
 CROSS JOIN (
     VALUES 
-        ('https://ohdidi.vn/uploads/static/NEWS/blog/du%20lich%20da%20nang%20hoi%20an/du_lich_da_nang_hoi_an_2.png', 1, 'Da Nang - Hoi An Overview'),
+        ('https://truongsatour.com/uploads/images/%5BDownloader_la%5D-6593cb5ce65c7.jpg', 1, 'Da Nang - Hoi An Overview'),
         ('https://images2.thanhnien.vn/528068263637045248/2025/6/18/the-legend-danang-1-17502421275011965589401.jpg', 2, 'Dragon Bridge'),
         ('https://cdn.vntrip.vn/cam-nang/wp-content/uploads/2017/08/Nui-Ngu-Hanh-Son.png', 3, 'Marble Mountains')
 ) AS img(url, ord, cap)
