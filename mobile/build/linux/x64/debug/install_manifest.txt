@@ -1,0 +1,14 @@
+/home/vxn/Documents/100__UNI/uni__it__mobile/uni__it__mobile__project/uni__mobile__travel-app-fellow4u/mobile/build/linux/x64/debug/bundle/mobile
+/home/vxn/Documents/100__UNI/uni__it__mobile/uni__it__mobile__project/uni__mobile__travel-app-fellow4u/mobile/build/linux/x64/debug/bundle/data/icudtl.dat
+/home/vxn/Documents/100__UNI/uni__it__mobile/uni__it__mobile__project/uni__mobile__travel-app-fellow4u/mobile/build/linux/x64/debug/bundle/lib/libflutter_linux_gtk.so
+/home/vxn/Documents/100__UNI/uni__it__mobile/uni__it__mobile__project/uni__mobile__travel-app-fellow4u/mobile/build/linux/x64/debug/bundle/lib/libflutter_secure_storage_linux_plugin.so
+/home/vxn/Documents/100__UNI/uni__it__mobile/uni__it__mobile__project/uni__mobile__travel-app-fellow4u/mobile/build/linux/x64/debug/bundle/data/flutter_assets/NOTICES.Z
+/home/vxn/Documents/100__UNI/uni__it__mobile/uni__it__mobile__project/uni__mobile__travel-app-fellow4u/mobile/build/linux/x64/debug/bundle/data/flutter_assets/shaders/ink_sparkle.frag
+/home/vxn/Documents/100__UNI/uni__it__mobile/uni__it__mobile__project/uni__mobile__travel-app-fellow4u/mobile/build/linux/x64/debug/bundle/data/flutter_assets/shaders/stretch_effect.frag
+/home/vxn/Documents/100__UNI/uni__it__mobile/uni__it__mobile__project/uni__mobile__travel-app-fellow4u/mobile/build/linux/x64/debug/bundle/data/flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf
+/home/vxn/Documents/100__UNI/uni__it__mobile/uni__it__mobile__project/uni__mobile__travel-app-fellow4u/mobile/build/linux/x64/debug/bundle/data/flutter_assets/NativeAssetsManifest.json
+/home/vxn/Documents/100__UNI/uni__it__mobile/uni__it__mobile__project/uni__mobile__travel-app-fellow4u/mobile/build/linux/x64/debug/bundle/data/flutter_assets/fonts/MaterialIcons-Regular.otf
+/home/vxn/Documents/100__UNI/uni__it__mobile/uni__it__mobile__project/uni__mobile__travel-app-fellow4u/mobile/build/linux/x64/debug/bundle/data/flutter_assets/AssetManifest.bin
+/home/vxn/Documents/100__UNI/uni__it__mobile/uni__it__mobile__project/uni__mobile__travel-app-fellow4u/mobile/build/linux/x64/debug/bundle/data/flutter_assets/version.json
+/home/vxn/Documents/100__UNI/uni__it__mobile/uni__it__mobile__project/uni__mobile__travel-app-fellow4u/mobile/build/linux/x64/debug/bundle/data/flutter_assets/kernel_blob.bin
+/home/vxn/Documents/100__UNI/uni__it__mobile/uni__it__mobile__project/uni__mobile__travel-app-fellow4u/mobile/build/linux/x64/debug/bundle/data/flutter_assets/FontManifest.json
